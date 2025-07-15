@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONFIGURAÇÕES E CONSTANTES GLOBAIS ---
     // IMPORTANTE: Substitua pela URL da sua nova implantação do Apps Script!
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx0u-3qCjA-sVmkOSPDJSf4R2OKRnLxAb0j_gPQ_RaNLN8DzrMj9ZgFQWsUe8diN2grFg/exec";
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbweXZImt34nwy7rVeJZ_WNgeogELNpIjjGTLnDDUK-Qv9pOdLaBd5PcqbsZDWyJG3w/exec";
 
     // --- SELETORES DE ELEMENTOS DOM ---
     // Elementos da tela de autenticação
