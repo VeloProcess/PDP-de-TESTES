@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbweXZImt34nwy7rVeJZ_WNgeogELNpIjjGTLnDDUK-Qv9pOdLaBd5PcqbsZDWyJG3w/exec";
 
     // --- SELETORES DE ELEMENTOS DOM ---
-    // Elementos da tela de autenticação
     const identificacaoOverlay = document.getElementById('identificacao-overlay');
     const formRegistro = document.getElementById('form-registro');
     const formLogin = document.getElementById('form-login');
@@ -13,8 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const registroView = document.getElementById('registro-view');
     const loginView = document.getElementById('login-view');
     const toggleLink = document.getElementById('toggle-link');
-
-    // Elemento principal da aplicação
     const appWrapper = document.querySelector('.app-wrapper');
 
     // --- LÓGICA DE AUTENTICAÇÃO (NOVO) ---
@@ -25,47 +22,47 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     async function enviarDadosAutenticacao(payload) {
         statusMessage.textContent = 'Processando...';
-        statusMessage.style.color = 'var(--cor-texto-secundario)'; // Cor neutra para "processando"
+        statusMessage.style.color = 'var(--cor-texto-secundario)';
 
         try {
-            // Usamos o 'fetch' para fazer a requisição POST para o nosso script
             const response = await fetch(BACKEND_URL, {
                 method: 'POST',
-                // O Apps Script não lida bem com CORS, então redirecionamos através de um proxy ou lidamos com a resposta opaca.
-                // Para simplificar, vamos assumir que a resposta virá, mas o modo 'no-cors' pode ser necessário se houver erros de CORS.
-                // mode: 'no-cors', // Descomente se tiver problemas de CORS
                 body: JSON.stringify(payload),
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                redirect: 'follow'
             });
+
+            if (!response.ok) {
+                throw new Error(`Erro de rede: ${response.status}`);
+            }
 
             const data = await response.json();
 
-            // Exibe a mensagem retornada pelo back-end
             statusMessage.textContent = data.mensagem;
 
             if (data.status === 'sucesso') {
-                statusMessage.style.color = '#155724'; // Verde para sucesso
+                statusMessage.style.color = 'var(--cor-sucesso)';
                 
                 if (payload.action === 'login') {
-                    // Se o login foi bem-sucedido, esconde a tela de login e inicia o app
+                    // Esconde a tela de login
                     identificacaoOverlay.style.display = 'none';
-                    appWrapper.style.display = 'grid'; // Usa 'grid' como no seu CSS
-                    iniciarBot({ email: payload.email, nome: payload.email.split('@')[0] }); // Inicia o bot com os dados
-                } else {
-                    // Se o registro foi bem-sucedido, limpa o formulário e pede para o usuário fazer login
+                    // Mostra o painel principal da aplicação
+                    appWrapper.style.display = 'grid';
+                    // Inicia o bot com os dados do usuário
+                    iniciarBot({ email: payload.email, nome: payload.email.split('@')[0] });
+                } else if (payload.action === 'registrar') {
                     formRegistro.reset();
-                    // Alterna para a tela de login automaticamente
-                    toggleLink.click(); 
+                    toggleLink.click(); // Simula um clique para ir para a tela de login
                 }
             } else {
-                statusMessage.style.color = '#721c24'; // Vermelho para erro
+                statusMessage.style.color = 'var(--cor-erro)';
             }
 
         } catch (error) {
-            statusMessage.textContent = 'Erro de conexão com o servidor.';
-            statusMessage.style.color = '#721c24';
+            statusMessage.textContent = 'Erro de conexão ou script. Verifique o console (F12).';
+            statusMessage.style.color = 'var(--cor-erro)';
             console.error("Erro na autenticação:", error);
         }
     }
@@ -112,13 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
             registroView.style.display = 'block';
             toggleLink.textContent = 'Já tem uma conta? Faça login';
         }
-        statusMessage.textContent = ''; // Limpa a mensagem de status ao alternar
+        statusMessage.textContent = '';
     });
 
 
     /**
      * Função principal que inicializa toda a lógica do chat APÓS o login bem-sucedido.
-     * Esta função e todo o seu conteúdo interno foram mantidos do seu código original.
      * @param {object} dadosAtendente - Objeto com e-mail do usuário logado.
      */
     function iniciarBot(dadosAtendente) {
@@ -196,14 +192,13 @@ document.addEventListener('DOMContentLoaded', () => {
             container.innerHTML = '<span style="font-size: 12px; color: var(--cor-texto-secundario);">Obrigado!</span>';
 
             try {
-                // A ação de feedback agora também usa o roteador 'doPost'
                 await fetch(BACKEND_URL, {
                     method: 'POST',
                     body: JSON.stringify({
-                        action: action, // 'logFeedbackPositivo' ou 'logFeedbackNegativo'
+                        action: action,
                         question: ultimaPergunta,
                         sourceRow: ultimaLinhaDaFonte,
-                        email: dadosAtendente.email // Usa o e-mail do usuário logado
+                        email: dadosAtendente.email
                     }),
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -299,7 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
             showTypingIndicator();
             
             try {
-                // A busca por resposta continua sendo GET, mas agora usa a mesma URL base
                 const url = `${BACKEND_URL}?pergunta=${encodeURIComponent(textoDaPergunta)}&email=${encodeURIComponent(dadosAtendente.email)}`;
                 const response = await fetch(url);
                 
@@ -383,6 +377,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- PONTO DE ENTRADA PRINCIPAL DA APLICAÇÃO ---
     // A aplicação agora não faz nada até que o usuário tente logar ou se registrar.
-    // A função `verificarIdentificacao()` foi removida.
+    // A função `verificarIdentificacao()` foi removida, pois a verificação agora é feita no backend.
 });
 �
