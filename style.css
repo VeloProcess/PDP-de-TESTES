@@ -89,10 +89,10 @@ body {
     height: 95vh;
     gap: var(--espaco-md);
     transition: var(--transicao-normal);
-    visibility: hidden; /* Começa invisível, JS controla a visibilidade */
+    display: none; /* MODIFICADO: Começa invisível, JS controla a visibilidade */
 }
 
-/* --- 🖊️ ESTILOS DO FORMULÁRIO DE IDENTIFICAÇÃO (antigos inline) --- */
+/* --- 🖊️ ESTILOS DO FORMULÁRIO DE IDENTIFICAÇÃO (MODIFICADO) --- */
 #identificacao-overlay {
     position: fixed;
     top: 0;
@@ -100,7 +100,7 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 50, 100, 0.85);
-    display: none; /* JS controla a exibição */
+    display: flex; /* MODIFICADO: Inicia visível por padrão */
     justify-content: center;
     align-items: center;
     z-index: 1000;
@@ -119,18 +119,19 @@ body {
     animation: slideUp var(--transicao-normal);
 }
 
-#identificacao-form .input-group {
+/* Estilos genéricos para os formulários de login e registro */
+#identificacao-box form .input-group {
     text-align: left;
     margin-bottom: 15px;
 }
 
-#identificacao-form label {
+#identificacao-box form label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
 }
 
-#identificacao-form input {
+#identificacao-box form input {
     width: 100%;
     padding: 12px;
     font-size: 16px;
@@ -141,7 +142,7 @@ body {
     color: var(--cor-texto-principal);
 }
 
-#identificacao-submit {
+#identificacao-box button[type="submit"] {
     padding: 12px 20px;
     width: 100%;
     font-size: 16px;
@@ -154,15 +155,30 @@ body {
     margin-top: 10px;
     transition: background-color var(--transicao-rapida);
 }
-#identificacao-submit:hover {
+#identificacao-box button[type="submit"]:hover {
     background-color: var(--cor-azul-escuro);
 }
 
-
-#identificacao-error {
-    display: none;
-    color: var(--cor-erro);
+/* Estilos para a mensagem de status (erros/sucesso) */
+#status-message {
+    color: var(--cor-texto-secundario);
     margin-top: 15px;
+    min-height: 20px; /* Garante que o layout não pule quando a mensagem aparece */
+    font-weight: 500;
+    transition: color var(--transicao-rapida);
+}
+
+/* Estilo para o link de alternância */
+#toggle-link {
+    display: block;
+    margin-top: var(--espaco-md);
+    color: var(--cor-texto-link);
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+#toggle-link:hover {
+    text-decoration: underline;
 }
 
 
