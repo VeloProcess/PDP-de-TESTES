@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONFIGURAÇÕES E CONSTANTES GLOBAIS ---
     // IMPORTANTE: Substitua pela URL da sua nova implantação do Apps Script!
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbweXZImt34nwy7rVeJZ_WNgeogELNpIjjGTLnDDUK-Qv9pOdLaBd5PcqbsZDWyJG3w/exec";
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx0u-3qCjA-sVmkOSPDJSf4R2OKRnLxAb0j_gPQ_RaNLN8DzrMj9ZgFQWsUe8diN2grFg/exec";
 
     // --- SELETORES DE ELEMENTOS DOM ---
     const identificacaoOverlay = document.getElementById('identificacao-overlay');
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'copy-btn';
                 copyBtn.title = 'Copiar resposta';
-                copyBtn.innerHTML = '�';
+                copyBtn.innerHTML = '📋';
                 copyBtn.onclick = () => {
                     const textToCopy = messageContainer.querySelector('.message').innerText;
                     copiarTextoParaClipboard(textToCopy).then(success => {
@@ -375,8 +375,4 @@ document.addEventListener('DOMContentLoaded', () => {
         setInitialTheme();
     }
 
-    // --- PONTO DE ENTRADA PRINCIPAL DA APLICAÇÃO ---
-    // A aplicação agora não faz nada até que o usuário tente logar ou se registrar.
-    // A função `verificarIdentificacao()` foi removida, pois a verificação agora é feita no backend.
-});
-�
+}); // <-- A CHAVE DO PROBLEMA ESTAVA AQUI. ESTA É A FORMA CORRETA DE FECHAR.
