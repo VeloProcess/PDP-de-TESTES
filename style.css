@@ -81,6 +81,21 @@ body {
     background-attachment: fixed;
 }
 
+/* CORREÇÃO: Aplicando o background em um pseudo-elemento para garantir que ele fique atrás de todo o conteúdo */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://github.com/VeloProcess/PDP-Portal-de-Processos-/blob/main/unnamed.png?raw=true');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    z-index: -1; /* Coloca a imagem de fundo atrás de tudo */
+}
+
 .app-wrapper {
     display: grid;
     grid-template-columns: 300px 1fr 300px;
