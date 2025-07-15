@@ -74,7 +74,7 @@ body {
     padding: var(--espaco-md);
     box-sizing: border-box;
     transition: background-color var(--transicao-normal), color var(--transicao-normal);
-    background-image: url('https://github.com/VeloProcess/PDP-Portal-de-Processos-/blob/main/unnamed.png?raw=true');
+    background-image: url('');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
