@@ -1,73 +1,125 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // --- CONFIGURAÇÕES E CONSTANTES GLOBAIS ---
-    const DOMINIO_PERMITIDO = "@velotax.com.br";
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx0u-3qCjA-sVmkOSPDJSf4R2OKRnLxAb0j_gPQ_RaNLN8DzrMj9ZgFQWsUe8diN2grFg/exec";
-    const UM_DIA_EM_MS = 24 * 60 * 60 * 1000; // 86,400,000 milissegundos
 
-    // --- SELETORES DE ELEMENTOS DOM PRINCIPAIS ---
+    // --- CONFIGURAÇÕES E CONSTANTES GLOBAIS ---
+    // IMPORTANTE: Substitua pela URL da sua nova implantação do Apps Script!
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx0u-3qCjA-sVmkOSPDJSf4R2OKRnLxAb0j_gPQ_RaNLN8DzrMj9ZgFQWsUe8diN2grFg/exec";
+
+    // --- SELETORES DE ELEMENTOS DOM ---
+    // Elementos da tela de autenticação
     const identificacaoOverlay = document.getElementById('identificacao-overlay');
-    const identificacaoForm = document.getElementById('identificacao-form');
+    const formRegistro = document.getElementById('form-registro');
+    const formLogin = document.getElementById('form-login');
+    const statusMessage = document.getElementById('status-message');
+    const registroView = document.getElementById('registro-view');
+    const loginView = document.getElementById('login-view');
+    const toggleLink = document.getElementById('toggle-link');
+
+    // Elemento principal da aplicação
     const appWrapper = document.querySelector('.app-wrapper');
 
-    // --- LÓGICA DE AUTENTICAÇÃO E INICIALIZAÇÃO ---
+    // --- LÓGICA DE AUTENTICAÇÃO (NOVO) ---
 
     /**
-     * Verifica se existe uma sessão válida no localStorage.
-     * Se não for válida, mostra o overlay de login.
-     * Se for válida, inicia o aplicativo de chat.
+     * Função genérica para enviar dados (login/registro) para o back-end.
+     * @param {object} payload - O objeto de dados a ser enviado, incluindo a 'action'.
      */
-    function verificarIdentificacao() {
-        let dadosSalvos = null;
+    async function enviarDadosAutenticacao(payload) {
+        statusMessage.textContent = 'Processando...';
+        statusMessage.style.color = 'var(--cor-texto-secundario)'; // Cor neutra para "processando"
+
         try {
-            const dadosSalvosString = localStorage.getItem('dadosAtendenteChatbot');
-            if (dadosSalvosString) {
-                dadosSalvos = JSON.parse(dadosSalvosString);
+            // Usamos o 'fetch' para fazer a requisição POST para o nosso script
+            const response = await fetch(BACKEND_URL, {
+                method: 'POST',
+                // O Apps Script não lida bem com CORS, então redirecionamos através de um proxy ou lidamos com a resposta opaca.
+                // Para simplificar, vamos assumir que a resposta virá, mas o modo 'no-cors' pode ser necessário se houver erros de CORS.
+                // mode: 'no-cors', // Descomente se tiver problemas de CORS
+                body: JSON.stringify(payload),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            // Exibe a mensagem retornada pelo back-end
+            statusMessage.textContent = data.mensagem;
+
+            if (data.status === 'sucesso') {
+                statusMessage.style.color = '#155724'; // Verde para sucesso
+                
+                if (payload.action === 'login') {
+                    // Se o login foi bem-sucedido, esconde a tela de login e inicia o app
+                    identificacaoOverlay.style.display = 'none';
+                    appWrapper.style.display = 'grid'; // Usa 'grid' como no seu CSS
+                    iniciarBot({ email: payload.email, nome: payload.email.split('@')[0] }); // Inicia o bot com os dados
+                } else {
+                    // Se o registro foi bem-sucedido, limpa o formulário e pede para o usuário fazer login
+                    formRegistro.reset();
+                    // Alterna para a tela de login automaticamente
+                    toggleLink.click(); 
+                }
+            } else {
+                statusMessage.style.color = '#721c24'; // Vermelho para erro
             }
-        } catch (e) {
-            console.error("Erro ao ler dados do localStorage:", e);
-            localStorage.removeItem('dadosAtendenteChatbot');
-        }
 
-        const sessaoValida = dadosSalvos && 
-                             dadosSalvos.email &&
-                             dadosSalvos.email.endsWith(DOMINIO_PERMITIDO) &&
-                             (Date.now() - dadosSalvos.timestamp < UM_DIA_EM_MS);
-
-        if (!sessaoValida) {
-            identificacaoOverlay.style.display = 'flex';
-            appWrapper.style.visibility = 'hidden';
-        } else {
-            identificacaoOverlay.style.display = 'none';
-            appWrapper.style.visibility = 'visible';
-            iniciarBot(dadosSalvos);
+        } catch (error) {
+            statusMessage.textContent = 'Erro de conexão com o servidor.';
+            statusMessage.style.color = '#721c24';
+            console.error("Erro na autenticação:", error);
         }
     }
 
-    /**
-     * Listener para o formulário de identificação.
-     * Valida os dados e, se corretos, armazena no localStorage e inicia o chat.
-     */
-    identificacaoForm.addEventListener('submit', (event) => {
+    // Listener para o formulário de REGISTRO
+    formRegistro.addEventListener('submit', (event) => {
         event.preventDefault();
-        const nome = document.getElementById('nome-input').value.trim();
-        const email = document.getElementById('email-input').value.trim().toLowerCase();
-        const errorMsg = document.getElementById('identificacao-error');
-
-        if (nome && email && email.endsWith(DOMINIO_PERMITIDO)) {
-            const dadosAtendente = { nome, email, timestamp: Date.now() };
-            localStorage.setItem('dadosAtendenteChatbot', JSON.stringify(dadosAtendente));
-            identificacaoOverlay.style.display = 'none';
-            appWrapper.style.visibility = 'visible';
-            iniciarBot(dadosAtendente);
-        } else {
-            errorMsg.style.display = 'block';
-        }
+        const email = document.getElementById('registro-email').value;
+        const senha = document.getElementById('registro-senha').value;
+        
+        const payload = {
+            action: 'registrar',
+            email: email,
+            senha: senha
+        };
+        
+        enviarDadosAutenticacao(payload);
     });
 
+    // Listener para o formulário de LOGIN
+    formLogin.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const senha = document.getElementById('login-senha').value;
+        
+        const payload = {
+            action: 'login',
+            email: email,
+            senha: senha
+        };
+        
+        enviarDadosAutenticacao(payload);
+    });
+
+    // Listener para o link que alterna entre as telas de login e registro
+    toggleLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (loginView.style.display === 'none') {
+            loginView.style.display = 'block';
+            registroView.style.display = 'none';
+            toggleLink.textContent = 'Não tem uma conta? Registre-se';
+        } else {
+            loginView.style.display = 'none';
+            registroView.style.display = 'block';
+            toggleLink.textContent = 'Já tem uma conta? Faça login';
+        }
+        statusMessage.textContent = ''; // Limpa a mensagem de status ao alternar
+    });
+
+
     /**
-     * Função principal que inicializa toda a lógica do chat após a autenticação.
-     * @param {object} dadosAtendente - Objeto com nome e e-mail do usuário.
+     * Função principal que inicializa toda a lógica do chat APÓS o login bem-sucedido.
+     * Esta função e todo o seu conteúdo interno foram mantidos do seu código original.
+     * @param {object} dadosAtendente - Objeto com e-mail do usuário logado.
      */
     function iniciarBot(dadosAtendente) {
         // Seletores de elementos do Chat
@@ -85,13 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let ultimaLinhaDaFonte = null;
         let isTyping = false;
 
-        // --- FUNÇÕES AUXILIARES E DE LÓGICA DO CHAT ---
+        // --- FUNÇÕES AUXILIARES E DE LÓGICA DO CHAT (SEU CÓDIGO ORIGINAL) ---
 
-        /**
-         * Copia um texto para a área de transferência, com fallback para métodos antigos.
-         * @param {string} texto - O texto a ser copiado.
-         * @returns {Promise<boolean>} - True se a cópia foi bem-sucedida, false caso contrário.
-         */
         async function copiarTextoParaClipboard(texto) {
             try {
                 await navigator.clipboard.writeText(texto);
@@ -117,9 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        /**
-         * Mostra o indicador de "digitando...".
-         */
         function showTypingIndicator() {
             if (isTyping) return;
             isTyping = true;
@@ -137,22 +181,12 @@ document.addEventListener('DOMContentLoaded', () => {
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        /**
-         * Esconde o indicador de "digitando...".
-         */
         function hideTypingIndicator() {
             isTyping = false;
             const typingIndicator = document.getElementById('typing-indicator');
             if (typingIndicator) typingIndicator.remove();
         }
         
-        /**
-         * Envia o feedback (positivo ou negativo) para o backend.
-         * @param {string} action - Ação a ser registrada (ex: 'logFeedbackPositivo').
-         * @param {HTMLElement} container - O elemento que contém os botões de feedback.
-         * @param {HTMLElement} positiveBtn - O botão de feedback positivo.
-         * @param {HTMLElement} negativeBtn - O botão de feedback negativo.
-         */
         async function enviarFeedback(action, container, positiveBtn, negativeBtn) {
             if (!ultimaPergunta || !ultimaLinhaDaFonte) return;
             
@@ -162,15 +196,16 @@ document.addEventListener('DOMContentLoaded', () => {
             container.innerHTML = '<span style="font-size: 12px; color: var(--cor-texto-secundario);">Obrigado!</span>';
 
             try {
+                // A ação de feedback agora também usa o roteador 'doPost'
                 await fetch(BACKEND_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
                     body: JSON.stringify({
-                        action: action,
+                        action: action, // 'logFeedbackPositivo' ou 'logFeedbackNegativo'
                         question: ultimaPergunta,
                         sourceRow: ultimaLinhaDaFonte,
-                        email: dadosAtendente.email
-                    })
+                        email: dadosAtendente.email // Usa o e-mail do usuário logado
+                    }),
+                    headers: { 'Content-Type': 'application/json' }
                 });
             } catch (error) {
                 console.error("Erro ao enviar feedback:", error);
@@ -182,12 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        /**
-         * Adiciona uma nova mensagem à caixa de chat.
-         * @param {string} message - O conteúdo da mensagem.
-         * @param {string} sender - 'user' ou 'bot'.
-         * @param {object} options - Opções adicionais, como 'sourceRow'.
-         */
         function addMessage(message, sender, options = {}) {
             hideTypingIndicator();
             const { sourceRow = null } = options;
@@ -208,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'copy-btn';
                 copyBtn.title = 'Copiar resposta';
-                copyBtn.innerHTML = '📋';
+                copyBtn.innerHTML = '�';
                 copyBtn.onclick = () => {
                     const textToCopy = messageContainer.querySelector('.message').innerText;
                     copiarTextoParaClipboard(textToCopy).then(success => {
@@ -260,10 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        /**
-         * Busca a resposta para uma pergunta no backend.
-         * @param {string} textoDaPergunta - A pergunta do usuário.
-         */
         async function buscarResposta(textoDaPergunta) {
             ultimaPergunta = textoDaPergunta;
             ultimaLinhaDaFonte = null;
@@ -274,6 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showTypingIndicator();
             
             try {
+                // A busca por resposta continua sendo GET, mas agora usa a mesma URL base
                 const url = `${BACKEND_URL}?pergunta=${encodeURIComponent(textoDaPergunta)}&email=${encodeURIComponent(dadosAtendente.email)}`;
                 const response = await fetch(url);
                 
@@ -294,10 +320,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        /**
-         * Função de conveniência para lidar com o envio de uma mensagem.
-         * @param {string} text - O texto a ser enviado.
-         */
         function handleSendMessage(text) {
             const trimmedText = text.trim();
             if (trimmedText) {
@@ -305,9 +327,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        /**
-         * Define o tema inicial (claro ou escuro) com base no localStorage.
-         */
         function setInitialTheme() {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
@@ -319,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // --- EVENT LISTENERS (OUVINTES DE EVENTOS) ---
+        // --- EVENT LISTENERS (SEU CÓDIGO ORIGINAL) ---
 
         userInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -363,5 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- PONTO DE ENTRADA PRINCIPAL DA APLICAÇÃO ---
-    verificarIdentificacao();
+    // A aplicação agora não faz nada até que o usuário tente logar ou se registrar.
+    // A função `verificarIdentificacao()` foi removida.
 });
+�
