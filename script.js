@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONFIGURAÇÕES E CONSTANTES GLOBAIS ---
-    // IMPORTANTE: Substitua pela URL da sua nova implantação do Apps Script!
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyingvePv8W4oxut35LMy0BYOpmOQg7NHzHs7kFtM9E8MrwrzNS4sFV0rSkMkoVhfmQ/exec";
+    // IMPORTANTE: Substitua pela URL da sua NOVA implantação do Apps Script!
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwRTRDy6OCj7gdfMXgswQm7RW89GJoXOxipv3_79sRtwRBUh441fBCIDhe0RdPPVGJR/exec";
 
     // --- SELETORES DE ELEMENTOS DOM ---
     const identificacaoOverlay = document.getElementById('identificacao-overlay');
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleLink = document.getElementById('toggle-link');
     const appWrapper = document.querySelector('.app-wrapper');
 
-    // --- LÓGICA DE AUTENTICAÇÃO (NOVO) ---
+    // --- LÓGICA DE AUTENTICAÇÃO (MODIFICADA) ---
 
     /**
      * Função genérica para enviar dados (login/registro) para o back-end.
@@ -25,17 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
         statusMessage.style.color = 'var(--cor-texto-secundario)';
 
         try {
+            // MUDANÇA PRINCIPAL: Enviamos a requisição sem o header 'Content-Type: application/json'.
+            // Isso faz com que o navegador a trate como uma "requisição simples" (text/plain),
+            // que NÃO precisa da verificação de segurança CORS (preflight) que está a causar o erro.
             const response = await fetch(BACKEND_URL, {
                 method: 'POST',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                redirect: 'follow'
+                body: JSON.stringify(payload) // O corpo continua a ser uma string JSON
             });
 
             if (!response.ok) {
-                throw new Error(`Erro de rede: ${response.status}`);
+                const errorBody = await response.text();
+                throw new Error(`Erro de rede: ${response.status}. Resposta: ${errorBody}`);
             }
 
             const data = await response.json();
@@ -46,15 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusMessage.style.color = 'var(--cor-sucesso)';
                 
                 if (payload.action === 'login') {
-                    // Esconde a tela de login
                     identificacaoOverlay.style.display = 'none';
-                    // Mostra o painel principal da aplicação
                     appWrapper.style.display = 'grid';
-                    // Inicia o bot com os dados do usuário
                     iniciarBot({ email: payload.email, nome: payload.email.split('@')[0] });
                 } else if (payload.action === 'registrar') {
                     formRegistro.reset();
-                    toggleLink.click(); // Simula um clique para ir para a tela de login
+                    toggleLink.click();
                 }
             } else {
                 statusMessage.style.color = 'var(--cor-erro)';
@@ -72,14 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         const email = document.getElementById('registro-email').value;
         const senha = document.getElementById('registro-senha').value;
-        
-        const payload = {
-            action: 'registrar',
-            email: email,
-            senha: senha
-        };
-        
-        enviarDadosAutenticacao(payload);
+        enviarDadosAutenticacao({ action: 'registrar', email, senha });
     });
 
     // Listener para o formulário de LOGIN
@@ -87,28 +77,16 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         const email = document.getElementById('login-email').value;
         const senha = document.getElementById('login-senha').value;
-        
-        const payload = {
-            action: 'login',
-            email: email,
-            senha: senha
-        };
-        
-        enviarDadosAutenticacao(payload);
+        enviarDadosAutenticacao({ action: 'login', email, senha });
     });
 
-    // Listener para o link que alterna entre as telas de login e registro
+    // Listener para o link que alterna entre as telas
     toggleLink.addEventListener('click', (e) => {
         e.preventDefault();
-        if (loginView.style.display === 'none') {
-            loginView.style.display = 'block';
-            registroView.style.display = 'none';
-            toggleLink.textContent = 'Não tem uma conta? Registre-se';
-        } else {
-            loginView.style.display = 'none';
-            registroView.style.display = 'block';
-            toggleLink.textContent = 'Já tem uma conta? Faça login';
-        }
+        const isLoginVisible = loginView.style.display !== 'none';
+        loginView.style.display = isLoginVisible ? 'none' : 'block';
+        registroView.style.display = isLoginVisible ? 'block' : 'none';
+        toggleLink.textContent = isLoginVisible ? 'Já tem uma conta? Faça login' : 'Não tem uma conta? Registre-se';
         statusMessage.textContent = '';
     });
 
@@ -118,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {object} dadosAtendente - Objeto com e-mail do usuário logado.
      */
     function iniciarBot(dadosAtendente) {
-        // Seletores de elementos do Chat
         const chatBox = document.getElementById('chat-box');
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
@@ -128,12 +105,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const allQuestions = document.querySelectorAll('#quick-questions-list li, .more-questions-list li');
         const expandableHeader = document.getElementById('expandable-faq-header');
         
-        // Variáveis de estado do chat
         let ultimaPergunta = '';
         let ultimaLinhaDaFonte = null;
         let isTyping = false;
 
-        // --- FUNÇÕES AUXILIARES E DE LÓGICA DO CHAT (SEU CÓDIGO ORIGINAL) ---
+        // --- FUNÇÕES AUXILIARES E DE LÓGICA DO CHAT ---
 
         async function copiarTextoParaClipboard(texto) {
             try {
@@ -188,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             positiveBtn.disabled = true;
             negativeBtn.disabled = true;
-
             container.innerHTML = '<span style="font-size: 12px; color: var(--cor-texto-secundario);">Obrigado!</span>';
 
             try {
@@ -199,8 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         question: ultimaPergunta,
                         sourceRow: ultimaLinhaDaFonte,
                         email: dadosAtendente.email
-                    }),
-                    headers: { 'Content-Type': 'application/json' }
+                    })
                 });
             } catch (error) {
                 console.error("Erro ao enviar feedback:", error);
@@ -256,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const positiveBtn = document.createElement('button');
                 positiveBtn.className = 'feedback-btn positive';
-                positiveBtn.innerHTML = '👍';
+                positiveBtn.innerHTML = '�';
                 positiveBtn.title = 'Resposta útil';
 
                 const negativeBtn = document.createElement('button');
@@ -332,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // --- EVENT LISTENERS (SEU CÓDIGO ORIGINAL) ---
+        // --- EVENT LISTENERS ---
 
         userInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -375,4 +349,4 @@ document.addEventListener('DOMContentLoaded', () => {
         setInitialTheme();
     }
 
-}); // <-- A CHAVE DO PROBLEMA ESTAVA AQUI. ESTA É A FORMA CORRETA DE FECHAR.
+});
