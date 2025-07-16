@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONFIGURAÇÕES E CONSTANTES GLOBAIS ---
     // IMPORTANTE: Substitua pela URL da sua NOVA implantação do Apps Script!
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyTtQTpYz3NUqhKF3cMowfc7mDzADy_AAnjBN4ULcJetnSGte9JDjMqVvs7HrYExY1d/exec";
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbw6QUxdlbd6S8KJs0YVLOygcig75QSCA9cSd0HN6I-uT-POOihfYPhQdiIGil-LsYHK/exec";
 
     // --- SELETORES DE ELEMENTOS DOM ---
     const identificacaoOverlay = document.getElementById('identificacao-overlay');
