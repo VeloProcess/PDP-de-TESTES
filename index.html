@@ -89,4 +89,41 @@
             </div>
             <div class="chat-box" id="chat-box"></div>
             <div class="input-area">
-                <input type="text" id="user-input" placeholder="Digite sua
+                <input type="text" id="user-input" placeholder="Digite sua mensagem..." autocomplete="off">
+                <button id="send-button" class="action-button" title="Enviar mensagem">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405Z"></path></svg>
+                </button>
+                <button class="gemini-button" onclick="window.open('https://gemini.google.com/app?hl=pt-BR', '_blank')" title="Obter ajuda do Gemini AI">
+                    ✦
+                </button>
+            </div>
+        </div>
+
+        <div id="news-panel" class="panel">
+            <div class="panel-header">
+                <h2>Notícias e Alertas</h2>
+            </div>
+            <div id="news-list">
+                <div class="news-item critical-alert">
+                    <h2>Desligamos a Antecipação novamente, pessoal</h2>
+                    <small>Publicado em: 07/07/2025</small>
+                    <p>Pessoal, para todos os clientes que entrarem em contato via chamada ou ticket, que questionar/demonstrar interesse na antecipação e/ou crédito trabalhador, por favor, registrem na planilha abaixo, pois realizaremos o envio de notificação para os mesmos. 
+🚨É importante¹ mencionar que estamos realizando os testes finais e em breve serão disponibilizados no aplicativo.
+🚨É importante² ***NÃO*** mencionar nenhum prazo aos clientes. Conforme formos avançando, informaremos à vocês. Link e planilha no grupo B2C Recados e novidades!!</p>
+                </div>
+                <div class="news-item warning-alert">
+                    <h2>Ainda sem novidades!</h2>
+                    <small></small>
+                    <p></p>
+                </div>
+                <div class="news-item info-alert">
+                    <h2>Ainda sem novidades!</h2>
+                    <small></small>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
