@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const identificacaoOverlay = document.getElementById('identificacao-overlay');
     const identificacaoForm = document.getElementById('identificacao-form');
     const appWrapper = document.querySelector('.app-wrapper');
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyQ4sHbHnpOsawPe4rI27fCnOnOK8btzDXtmGsDz5kJytJFBtM7bsCk1alW7vqBHxaeFQ/exec";
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwpArmies9U1ulEX0aH0VQre5fduNTvzAgn2FGTFLRgxt0aDt1KoapqGglR_AcZLAjnEQ/exec";
 
     if (!identificacaoForm) {
         console.error("Elemento com ID 'identificacao-form' não encontrado no DOM. Verifique o index.html.");
@@ -42,6 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
                       localStorage.removeItem('dadosAtendenteChatbot');
                       identificacaoOverlay.style.display = 'flex';
                       appWrapper.style.visibility = 'hidden';
+                      document.getElementById('identificacao-error').textContent = data.mensagem || "Sessão expirada. Faça login novamente.";
+                      document.getElementById('identificacao-error').style.display = 'block';
                   }
               })
               .catch(error => {
@@ -49,6 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   localStorage.removeItem('dadosAtendenteChatbot');
                   identificacaoOverlay.style.display = 'flex';
                   appWrapper.style.visibility = 'hidden';
+                  document.getElementById('identificacao-error').textContent = "Erro de conexão com o servidor. Tente novamente mais tarde.";
+                  document.getElementById('identificacao-error').style.display = 'block';
               });
         }
     }
@@ -107,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tentativas++;
             localStorage.setItem('tentativasLogin', tentativas);
             console.error("Erro ao processar login:", error);
-            errorMsg.textContent = "Erro de conexão. Verifique o console (F12).";
+            errorMsg.textContent = "Erro de conexão com o servidor. Tente novamente mais tarde.";
             errorMsg.style.display = 'block';
         }
     });
@@ -257,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
             container.innerHTML = '<span style="font-size: 12px; color: var(--cor-texto-secundario);">Obrigado!</span>';
 
             try {
-                await fetch(BACKEND_URL, {
+                const response = await fetch(BACKEND_URL, {
                     method: 'POST',
                     mode: 'cors',
                     headers: { 'Content-Type': 'application/json' },
@@ -268,6 +272,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         email: dadosAtendente.email
                     })
                 });
+                const data = await response.json();
+                if (data.status.includes('erro')) {
+                    console.warn("Erro ao registrar feedback:", data.mensagem);
+                }
             } catch (error) {
                 console.error("Erro ao enviar feedback:", error);
             }
@@ -303,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 hideTypingIndicator();
                 console.error("Erro ao buscar resposta:", error);
-                addMessage("Erro de conexão. Verifique o console (F12) para mais detalhes.", 'bot');
+                addMessage("Erro de conexão com o servidor. Tente novamente mais tarde.", 'bot');
             }
         }
 
