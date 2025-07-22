@@ -9,30 +9,30 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-   <div id="identificacao-overlay">
-    <div id="identificacao-box">
-        <h2>Bem-vindo(a) ao Painel</h2>
-        <p>Por favor, identifique-se para continuar.</p>
-        <form id="identificacao-form">
-            <div class="input-group" style="text-align: left; margin-bottom: 15px;">
-                <label for="nome-input" style="display: block; margin-bottom: 5px; font-weight: bold;">Nome: </label>
-                <input type="text" id="nome-input" required style="width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box;">
-            </div>
-            <div class="input-group" style="text-align: left; margin-bottom: 15px;">
-                <label for="email-input" style="display: block; margin-bottom: 5px; font-weight: bold;">E-mail Corporativo: </label>
-                <input type="email" id="email-input" required style="width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box;">
-            </div>
-            <div class="input-group" style="text-align: left; margin-bottom: 15px;">
-                <label for="senha-input" style="display: block; margin-bottom: 5px; font-weight: bold;">Senha: </label>
-                <input type="password" id="senha-input" required style="width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box;">
-            </div>
-            <button type="submit" id="identificacao-submit" style="padding: 12px 20px; width: 100%; font-size: 16px; font-weight: bold; border: none; background-color: var(--cor-azul-vibrante); color: white; border-radius: 8px; cursor: pointer; margin-top: 10px;">Entrar</button>
-        </form>
-        <p id="identificacao-error" style="display:none; color: var(--cor-erro); margin-top: 15px;">E-mail ou senha inválidos.</p>
+    <div id="identificacao-overlay">
+        <div id="identificacao-box">
+            <h2>Bem-vindo(a) ao Painel</h2>
+            <p>Por favor, identifique-se para continuar.</p>
+            <form id="identificacao-form">
+                <div class="input-group">
+                    <label for="nome-input">Nome:</label>
+                    <input type="text" id="nome-input" required>
+                </div>
+                <div class="input-group">
+                    <label for="email-input">E-mail Corporativo:</label>
+                    <input type="email" id="email-input" required>
+                </div>
+                <div class="input-group">
+                    <label for="senha-input">Senha:</label>
+                    <input type="password" id="senha-input" required>
+                </div>
+                <button type="submit" id="identificacao-submit">Entrar</button>
+            </form>
+            <p id="identificacao-error" style="display: none;">E-mail ou senha inválidos.</p>
+        </div>
     </div>
-</div>
     
-    <div class="app-wrapper">
+    <div class="app-wrapper" style="visibility: hidden;">
         <div id="sidebar" class="panel">
             <div class="panel-header">
                 <h2>Perguntas Frequentes</h2>
@@ -58,16 +58,15 @@
                     </div>
                     <div id="more-questions" class="hidden-questions">
                         <div class="question-category">Financeiro</div>
-                        <ul id="more-questions-list">
+                        <ul class="more-questions-list">
                             <li data-question="Retenção da chave pix">Retenção da chave pix</li>
                             <li data-question="Juros">Juros</li>
                             <li data-question="Desconto proporcional">Desconto proporcional</li>
                             <li data-question="Qual o prazo para a restituição?">Qual o prazo para a restituição?</li>
                             <li data-question="Como fazer estorno?">Como fazer estorno?</li>
                         </ul>
-                        
                         <div class="question-category">Técnico</div>
-                        <ul id="more-questions-list">
+                        <ul class="more-questions-list">
                             <li data-question="Portabilidade">Portabilidade</li>
                             <li data-question="O que fazer se caí na malha fina?">O que fazer se caí na malha fina?</li>
                             <li data-question="Como declarar investimentos?">Como declarar investimentos?</li>
@@ -75,9 +74,9 @@
                     </div>
                 </div>
 
-                <div style="margin-top: auto; padding-top: var(--espaco-md); border-top: 1px solid var(--cor-borda);">
-                    <h2><p style="font-size: 13px; color: var(--cor-azul-medio);">📋 Clique na prancheta ao lado da resposta para copiar</p></h2>
-                    <p style="font-size: 12px; margin-top: var(--espaco-sm);"><strong>Observação: As informações aqui são de uso interno.</strong> </p>
+                <div class="sidebar-footer">
+                    <p class="copy-instruction">📋 Clique na prancheta ao lado da resposta para copiar</p>
+                    <p class="internal-use-notice"><strong>Observação: As informações aqui são de uso interno.</strong></p>
                 </div>
             </div>
         </div>
@@ -90,41 +89,4 @@
             </div>
             <div class="chat-box" id="chat-box"></div>
             <div class="input-area">
-                <input type="text" id="user-input" placeholder="Digite sua mensagem..." autocomplete="off">
-                <button id="send-button" class="action-button" title="Enviar mensagem">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405Z"></path></svg>
-                </button>
-                <button class="gemini-button" onclick="window.open('https://gemini.google.com/app?hl=pt-BR', '_blank')" title="Obter ajuda do Gemini AI">
-                    ✦
-                </button>
-            </div>
-        </div>
-
-        <div id="news-panel" class="panel">
-            <div class="panel-header">
-                <h2>Notícias e Alertas</h2>
-            </div>
-            <div id="news-list" style="padding: var(--espaco-md);">
-                <div class="news-item critical-alert">
-                    <h2>Desligamos a Antecipação novamente, pessoal</h2>
-                    <small>Publicado em: 07/07/2025</small>
-                    <p>Pessoal, para todos os clientes que entrarem em contato via chamada ou ticket, que questionar/demonstrar interesse na antecipação e/ou crédito trabalhador, por favor, registrem na planilha abaixo, pois realizaremos o envio de notificação para os mesmos. 
-🚨É importante¹ mencionar que estamos realizando os testes finais e em breve serão disponibilizados no aplicativo.
-🚨É importante² ***NÃO*** mencionar nenhum prazo aos clientes. Conforme formos avançando, informaremos à vocês. Link e planilha no grupo B2C Recados e novidades!!</p>
-                </div>
-                <div class="news-item warning-alert">
-                    <h2>Ainda sem novidades!</h2>
-                    <small></small>
-                    <p></p>
-                </div>
-                <div class="news-item info-alert">
-                    <h2>Ainda sem novidades!</h2>
-                    <small></small>
-                    <p></p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>
+                <input type="text" id="user-input" placeholder="Digite sua
