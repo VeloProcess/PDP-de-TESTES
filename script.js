@@ -2,7 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const identificacaoOverlay = document.getElementById('identificacao-overlay');
     const identificacaoForm = document.getElementById('identificacao-form');
     const appWrapper = document.querySelector('.app-wrapper');
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyQ4sHbHnpOsawPe4rI27fCnOnOK8btzDXtmGsDz5kJytJFBtM7bsCk1alW7vqBHxaeFQ/exec";
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx0u-3qCjA-sVmkOSPDJSf4R2OKRnLxAb0j_gPQ_RaNLN8DzrMj9ZgFQWsUe8diN2grFg/exec";
+
+    if (!identificacaoForm) {
+        console.error("Elemento com ID 'identificacao-form' não encontrado no DOM. Verifique o index.html.");
+        return;
+    }
 
     function verificarIdentificacao() {
         const umDiaEmMs = 24 * 60 * 60 * 1000;
@@ -18,37 +23,59 @@ document.addEventListener('DOMContentLoaded', () => {
             identificacaoOverlay.style.display = 'flex';
             appWrapper.style.visibility = 'hidden';
         } else {
-            // Verificar validade do login no back-end
             fetch(BACKEND_URL, {
                 method: 'POST',
-                mode: 'no-cors',
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'login',
                     email: dadosSalvos.email,
                     senha: dadosSalvos.senha
                 })
-            }).then(() => {
-                // Como 'no-cors' impede leitura da resposta, assumimos que o login é válido se os dados estão no localStorage
-                identificacaoOverlay.style.display = 'none';
-                appWrapper.style.visibility = 'visible';
-                iniciarBot(dadosSalvos);
-            }).catch(error => {
-                console.error("Erro ao verificar login:", error);
-                localStorage.removeItem('dadosAtendenteChatbot');
-                identificacaoOverlay.style.display = 'flex';
-                appWrapper.style.visibility = 'hidden';
-            });
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.status === 'sucesso') {
+                      identificacaoOverlay.style.display = 'none';
+                      appWrapper.style.visibility = 'visible';
+                      iniciarBot(dadosSalvos);
+                  } else {
+                      localStorage.removeItem('dadosAtendenteChatbot');
+                      identificacaoOverlay.style.display = 'flex';
+                      appWrapper.style.visibility = 'hidden';
+                  }
+              })
+              .catch(error => {
+                  console.error("Erro ao verificar login:", error);
+                  localStorage.removeItem('dadosAtendenteChatbot');
+                  identificacaoOverlay.style.display = 'flex';
+                  appWrapper.style.visibility = 'hidden';
+              });
         }
     }
 
     identificacaoForm.addEventListener('submit', async function(event) {
         event.preventDefault();
+        let tentativas = parseInt(localStorage.getItem('tentativasLogin') || '0');
+        if (tentativas >= 5) {
+            const errorMsg = document.getElementById('identificacao-error');
+            errorMsg.textContent = "Muitas tentativas. Tente novamente em 5 minutos.";
+            errorMsg.style.display = 'block';
+            identificacaoForm.querySelector('button').disabled = true;
+            setTimeout(() => {
+                localStorage.setItem('tentativasLogin', '0');
+                identificacaoForm.querySelector('button').disabled = false;
+            }, 5 * 60 * 1000);
+            return;
+        }
+
         const nome = document.getElementById('nome-input').value.trim();
         const email = document.getElementById('email-input').value.trim().toLowerCase();
         const senha = document.getElementById('senha-input').value;
         const errorMsg = document.getElementById('identificacao-error');
 
         if (!nome || !email || !senha) {
+            tentativas++;
+            localStorage.setItem('tentativasLogin', tentativas);
             errorMsg.textContent = "Por favor, preencha todos os campos.";
             errorMsg.style.display = 'block';
             return;
@@ -57,23 +84,28 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(BACKEND_URL, {
                 method: 'POST',
-                mode: 'cors', // Alterado para 'cors' para ler a resposta
+                mode: 'cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action: 'login', email, senha })
             });
 
             const data = await response.json();
             if (data.status === 'sucesso') {
+                localStorage.setItem('tentativasLogin', '0');
                 const dadosAtendente = { nome, email, senha, timestamp: Date.now() };
                 localStorage.setItem('dadosAtendenteChatbot', JSON.stringify(dadosAtendente));
                 identificacaoOverlay.style.display = 'none';
                 appWrapper.style.visibility = 'visible';
                 iniciarBot(dadosAtendente);
             } else {
+                tentativas++;
+                localStorage.setItem('tentativasLogin', tentativas);
                 errorMsg.textContent = data.mensagem || "E-mail ou senha inválidos.";
                 errorMsg.style.display = 'block';
             }
         } catch (error) {
+            tentativas++;
+            localStorage.setItem('tentativasLogin', tentativas);
             console.error("Erro ao processar login:", error);
             errorMsg.textContent = "Erro de conexão. Verifique o console (F12).";
             errorMsg.style.display = 'block';
