@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbz-TH7rGJcIbi2FwCuLcWrI8TbtDU59ez5itje1voYf13tNCxgc0DRZXFR-58nzs5aQOg/exec";
 
     if (!identificacaoForm) {
-        console.error("Elemento com ID 'identificacao-form' não encontrado no DOM. Verifique o index.html.");
+        console.error("Elemento com ID 'identificacao-form' não encontrado no DOM.");
         return;
     }
 
@@ -121,8 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
         const themeSwitcher = document.getElementById('theme-switcher');
-        const body = document.body;
         const questionSearch = document.getElementById('question-search');
+        const expandableHeader = document.getElementById('expandable-faq-header');
+        const moreQuestions = document.getElementById('more-questions');
+        const body = document.body;
         
         let ultimaPergunta = '';
         let ultimaLinhaDaFonte = null;
@@ -156,16 +158,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         questionSearch.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            const questions = document.querySelectorAll('#quick-questions-list li, #more-questions-list li');
+            const questions = document.querySelectorAll('#quick-questions-list li, .more-questions-list li');
             
             questions.forEach(question => {
                 const text = question.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    question.style.display = 'block';
-                } else {
-                    question.style.display = 'none';
-                }
+                question.style.display = text.includes(searchTerm) ? 'block' : 'none';
             });
+        });
+
+        expandableHeader.addEventListener('click', () => {
+            expandableHeader.classList.toggle('expanded');
+            moreQuestions.style.display = expandableHeader.classList.contains('expanded') ? 'block' : 'none';
         });
 
         function showTypingIndicator() {
@@ -199,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const messageContainer = document.createElement('div');
             messageContainer.classList.add('message-container', sender);
             
-            const avatarDiv = `<div class="avatar">${sender === 'user' ? '👤' : '🤖'}</div>`;
+            const avatarDiv = `<div class="avatar ${sender}"> ${sender === 'user' ? '👤' : '🤖'}</div>`;
             
             const messageContentDiv = `
                 <div class="message-content">
@@ -236,13 +239,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 feedbackContainer.className = 'feedback-container';
 
                 const positiveBtn = document.createElement('button');
-                positiveBtn.className = 'feedback-btn';
+                positiveBtn.className = 'feedback-btn positive';
                 positiveBtn.innerHTML = '👍';
                 positiveBtn.title = 'Resposta útil';
                 positiveBtn.onclick = () => enviarFeedback('logFeedbackPositivo', feedbackContainer);
                 
                 const negativeBtn = document.createElement('button');
-                negativeBtn.className = 'feedback-btn';
+                negativeBtn.className = 'feedback-btn negative';
                 negativeBtn.innerHTML = '👎';
                 negativeBtn.title = 'Resposta incorreta';
                 negativeBtn.onclick = () => enviarFeedback('logFeedbackNegativo', feedbackContainer);
@@ -332,13 +335,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         sendButton.addEventListener('click', () => handleSendMessage(userInput.value));
         
-        document.querySelectorAll('#quick-questions-list li, #more-questions-list li').forEach(item => {
+        document.querySelectorAll('#quick-questions-list li, .more-questions-list li').forEach(item => {
             item.addEventListener('click', (e) => handleSendMessage(e.currentTarget.getAttribute('data-question')));
-        });
-
-        document.getElementById('expandable-faq-header').addEventListener('click', (e) => {
-            e.currentTarget.classList.toggle('expanded');
-            document.getElementById('more-questions').style.display = e.currentTarget.classList.contains('expanded') ? 'block' : 'none';
         });
 
         themeSwitcher.addEventListener('click', () => {
