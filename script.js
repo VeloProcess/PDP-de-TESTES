@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const identificacaoOverlay = document.getElementById('identificacao-overlay');
     const identificacaoForm = document.getElementById('identificacao-form');
     const appWrapper = document.querySelector('.app-wrapper');
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwpArmies9U1ulEX0aH0VQre5fduNTvzAgn2FGTFLRgxt0aDt1KoapqGglR_AcZLAjnEQ/exec";
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbz-TH7rGJcIbi2FwCuLcWrI8TbtDU59ez5itje1voYf13tNCxgc0DRZXFR-58nzs5aQOg/exec";
 
     if (!identificacaoForm) {
         console.error("Elemento com ID 'identificacao-form' não encontrado no DOM. Verifique o index.html.");
