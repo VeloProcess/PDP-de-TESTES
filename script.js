@@ -1,4 +1,4 @@
-script.js
+
 /**
  * Função de callback para o login do Google.
  * É chamada pela API do Google após o usuário fazer login.
