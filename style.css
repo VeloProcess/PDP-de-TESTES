@@ -390,29 +390,6 @@ body {
     height: 20px;
 }
 
-.gemini-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background-color: #FF6D00;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: all var(--transicao-rapida);
-    flex-shrink: 0;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.gemini-button:hover {
-    background-color: #E65100;
-    transform: scale(1.05);
-}
-
-
 /* --- MENSAGENS --- */
 .message-container {
     display: flex;
