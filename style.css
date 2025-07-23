@@ -1,1 +1,358 @@
-0
+/* --- 🎨 PALETA DE CORES E VARIÁVEIS (TEMA CLÁSSICO) 🎨 --- */
+:root {
+    /* Cores base */
+    [cite_start]--cor-fundo: #f0f4f8; [cite: 12]
+    [cite_start]--cor-container: #ffffff; [cite: 13]
+    [cite_start]--cor-caixa-chat: #eaf2ff; [cite: 13]
+    [cite_start]--cor-texto-principal: #333; [cite: 13]
+    [cite_start]--cor-borda: #d1e3f0; [cite: 13]
+    [cite_start]--cor-azul-claro: #a7d9ee; [cite: 13]
+    [cite_start]--cor-azul-medio: #007BFF; [cite: 13]
+    [cite_start]--cor-azul-escuro: #0056b3; [cite: 13]
+    [cite_start]--cor-balao-bot: #D6E4FF; [cite: 13]
+    [cite_start]--cor-sombra: rgba(0, 0, 0, 0.1); [cite: 14]
+    [cite_start]--cor-texto-link: #1a73e8; [cite: 14]
+    [cite_start]--cor-foco: #4d90fe; [cite: 14]
+    [cite_start]--cor-sucesso: #4CAF50; [cite: 14]
+    [cite_start]--cor-erro: #f44336; [cite: 14]
+    [cite_start]--cor-alerta: #FF9800; [cite: 14]
+    [cite_start]--cor-info: #2196F3; [cite: 14]
+
+    /* Espaçamentos */
+    [cite_start]--espaco-xs: 4px; [cite: 15]
+    [cite_start]--espaco-sm: 8px; [cite: 15]
+    [cite_start]--espaco-md: 16px; [cite: 15]
+    [cite_start]--espaco-lg: 24px; [cite: 15]
+    [cite_start]--espaco-xl: 32px; [cite: 15]
+    
+    /* Bordas */
+    [cite_start]--borda-raio: 12px; [cite: 15]
+    [cite_start]--borda-raio-sm: 6px; [cite: 16]
+    
+    /* Avatar */
+    [cite_start]--avatar-size: 36px; [cite: 16]
+    
+    /* Transições */
+    [cite_start]--transicao-rapida: 0.2s ease; [cite: 16]
+    [cite_start]--transicao-normal: 0.3s ease; [cite: 16]
+    [cite_start]--transicao-lenta: 0.5s ease; [cite: 17]
+}
+
+/* --- TEMA ESCURO --- */
+body.dark-theme {
+    [cite_start]--cor-fundo: #121212; [cite: 17]
+    [cite_start]--cor-container: #1e1e1e; [cite: 17]
+    [cite_start]--cor-caixa-chat: #2a2a2a; [cite: 17]
+    [cite_start]--cor-texto-principal: #e0e0e0; [cite: 17]
+    [cite_start]--cor-borda: #334a5f; [cite: 17]
+    [cite_start]--cor-azul-medio: #3a9bff; [cite: 17]
+    [cite_start]--cor-azul-escuro: #87c3ff; [cite: 18]
+    [cite_start]--cor-balao-bot: #2c3e50; [cite: 18]
+    [cite_start]--cor-sombra: rgba(255, 255, 255, 0.05); [cite: 18]
+    [cite_start]--cor-texto-link: #8ab4f8; [cite: 18]
+}
+
+/* --- ESTILOS GERAIS E DE LOGIN --- */
+body {
+    [cite_start]font-family: 'Segoe UI', 'Arial', sans-serif; [cite: 19]
+    [cite_start]background: var(--cor-fundo); [cite: 19]
+    [cite_start]color: var(--cor-texto-principal); [cite: 19]
+    [cite_start]display: flex; [cite: 19]
+    [cite_start]justify-content: center; [cite: 19]
+    [cite_start]align-items: center; [cite: 19]
+    [cite_start]height: 100vh; [cite: 20]
+    [cite_start]margin: 0; [cite: 20]
+    [cite_start]box-sizing: border-box; [cite: 20]
+    [cite_start]transition: background-color var(--transicao-normal), color var(--transicao-normal); [cite: 20]
+    [cite_start]background-image: url('https://github.com/VeloProcess/PDP-Portal-de-Processos-/blob/main/unnamed.png?raw=true'); [cite: 20]
+    [cite_start]background-size: cover; [cite: 20]
+    [cite_start]background-position: center center; [cite: 20]
+    [cite_start]background-repeat: no-repeat; [cite: 21]
+    [cite_start]background-attachment: fixed; [cite: 21]
+}
+
+#login-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    [cite_start]background-color: rgba(0, 50, 100, 0.85); [cite: 70]
+    [cite_start]display: flex; [cite: 70]
+    [cite_start]justify-content: center; [cite: 70]
+    [cite_start]align-items: center; [cite: 70]
+    [cite_start]z-index: 1000; [cite: 70]
+    [cite_start]backdrop-filter: blur(5px); [cite: 71]
+    [cite_start]animation: fadeIn var(--transicao-normal); [cite: 71]
+}
+
+#identificacao-box {
+    [cite_start]background: var(--cor-container); [cite: 72]
+    [cite_start]padding: var(--espaco-xl); [cite: 72]
+    [cite_start]border-radius: var(--borda-raio); [cite: 72]
+    [cite_start]box-shadow: 0 5px 25px rgba(0,0,0,0.3); [cite: 72]
+    [cite_start]text-align: center; [cite: 72]
+    [cite_start]width: 90%; [cite: 72]
+    [cite_start]max-width: 450px; [cite: 72]
+    [cite_start]animation: slideUp var(--transicao-normal); [cite: 72]
+}
+
+.app-wrapper.hidden {
+    display: none;
+}
+
+/* --- LAYOUT PRINCIPAL --- */
+.app-wrapper {
+    [cite_start]display: grid; [cite: 21]
+    [cite_start]grid-template-columns: 300px 1fr 300px; [cite: 21]
+    [cite_start]width: 100%; [cite: 21]
+    [cite_start]max-width: 1400px; [cite: 21]
+    [cite_start]height: 95vh; [cite: 21]
+    [cite_start]gap: var(--espaco-md); [cite: 22]
+}
+
+.panel {
+    [cite_start]background: var(--cor-container); [cite: 22]
+    [cite_start]border-radius: var(--borda-raio); [cite: 22]
+    [cite_start]box-shadow: 0 4px 20px var(--cor-sombra); [cite: 22]
+    [cite_start]padding: 0; [cite: 22]
+    [cite_start]display: flex; [cite: 22]
+    [cite_start]flex-direction: column; [cite: 23]
+    [cite_start]border: 1px solid var(--cor-borda); [cite: 23]
+    [cite_start]overflow: hidden; [cite: 23]
+}
+
+.panel-header {
+    [cite_start]display: flex; [cite: 24]
+    [cite_start]justify-content: space-between; [cite: 24]
+    [cite_start]align-items: center; [cite: 24]
+    [cite_start]padding: var(--espaco-md) var(--espaco-lg); [cite: 24]
+    [cite_start]background: linear-gradient(135deg, var(--cor-azul-medio) 0%, var(--cor-azul-escuro) 100%); [cite: 25]
+    [cite_start]color: white; [cite: 25]
+}
+
+.panel h2 {
+    [cite_start]margin: 0; [cite: 25]
+    [cite_start]font-size: 18px; [cite: 25]
+}
+
+#theme-switcher {
+    [cite_start]font-size: 20px; [cite: 26]
+    [cite_start]cursor: pointer; [cite: 26]
+    [cite_start]background: transparent; [cite: 26]
+    [cite_start]border: none; [cite: 26]
+    [cite_start]color: white; [cite: 26]
+    [cite_start]transition: transform var(--transicao-rapida); [cite: 26]
+}
+
+/* --- CHAT E MENSAGENS --- */
+.chat-container {
+    [cite_start]height: 100%; [cite: 36]
+    [cite_start]padding: 0; [cite: 36]
+    [cite_start]display: flex; [cite: 37]
+    [cite_start]flex-direction: column; [cite: 37]
+    [cite_start]position: relative; [cite: 37]
+}
+
+.chat-box {
+    [cite_start]flex-grow: 1; [cite: 37]
+    [cite_start]overflow-y: auto; [cite: 37]
+    [cite_start]padding: var(--espaco-md); [cite: 37]
+    [cite_start]background-color: var(--cor-caixa-chat); [cite: 37]
+}
+
+.input-area {
+    [cite_start]display: flex; [cite: 39]
+    [cite_start]align-items: center; [cite: 39]
+    [cite_start]gap: var(--espaco-sm); [cite: 39]
+    [cite_start]padding: var(--espaco-md); [cite: 39]
+    [cite_start]background-color: var(--cor-container); [cite: 39]
+    [cite_start]border-top: 1px solid var(--cor-borda); [cite: 40]
+}
+
+#user-input {
+    [cite_start]flex-grow: 1; [cite: 40]
+    [cite_start]padding: var(--espaco-md) var(--espaco-lg); [cite: 40]
+    [cite_start]border-radius: 24px; [cite: 40]
+    [cite_start]border: 1px solid var(--cor-borda); [cite: 40]
+    [cite_start]background-color: var(--cor-fundo); [cite: 41]
+    [cite_start]color: var(--cor-texto-principal); [cite: 41]
+    [cite_start]font-size: 15px; [cite: 41]
+    [cite_start]outline: none; [cite: 41]
+}
+
+.action-button {
+    [cite_start]display: flex; [cite: 46]
+    [cite_start]align-items: center; [cite: 46]
+    [cite_start]justify-content: center; [cite: 46]
+    [cite_start]width: 44px; [cite: 46]
+    [cite_start]height: 44px; [cite: 47]
+    [cite_start]border-radius: 50%; [cite: 47]
+    [cite_start]background-color: var(--cor-azul-medio); [cite: 47]
+    [cite_start]color: white; [cite: 47]
+    [cite_start]border: none; [cite: 47]
+    [cite_start]cursor: pointer; [cite: 47]
+    [cite_start]transition: all var(--transicao-rapida); [cite: 47]
+}
+
+.action-button:hover {
+    [cite_start]background-color: var(--cor-azul-escuro); [cite: 48]
+    [cite_start]transform: scale(1.05); [cite: 48]
+}
+
+.gemini-button {
+    [cite_start]display: flex; [cite: 48]
+    [cite_start]align-items: center; [cite: 48]
+    [cite_start]justify-content: center; [cite: 48]
+    [cite_start]width: 44px; [cite: 49]
+    [cite_start]height: 44px; [cite: 49]
+    [cite_start]border-radius: 50%; [cite: 49]
+    [cite_start]background-color: #FF6D00; [cite: 49]
+    [cite_start]color: white; [cite: 49]
+    [cite_start]border: none; [cite: 49]
+    [cite_start]cursor: pointer; [cite: 49]
+    [cite_start]transition: all var(--transicao-rapida); [cite: 49]
+    [cite_start]font-weight: bold; [cite: 50]
+}
+
+.gemini-button:hover {
+    [cite_start]background-color: #E65100; [cite: 50]
+    [cite_start]transform: scale(1.05); [cite: 50]
+}
+
+.message-container {
+    [cite_start]display: flex; [cite: 50]
+    [cite_start]margin-bottom: var(--espaco-md); [cite: 50]
+    [cite_start]max-width: 85%; [cite: 51]
+    [cite_start]animation: fadeIn var(--transicao-normal) forwards; [cite: 51]
+}
+
+.message-container.user {
+    [cite_start]align-self: flex-end; [cite: 51]
+    [cite_start]flex-direction: row-reverse; [cite: 51]
+}
+
+.avatar {
+    [cite_start]width: var(--avatar-size); [cite: 52]
+    [cite_start]height: var(--avatar-size); [cite: 52]
+    [cite_start]border-radius: 50%; [cite: 52]
+    [cite_start]background-size: cover; [cite: 52]
+    [cite_start]flex-shrink: 0; [cite: 52]
+    [cite_start]display: flex; [cite: 53]
+    [cite_start]align-items: center; [cite: 53]
+    [cite_start]justify-content: center; [cite: 53]
+    [cite_start]font-size: 18px; [cite: 53]
+    [cite_start]color: white; [cite: 53]
+}
+
+.avatar.user {
+    [cite_start]background-color: var(--cor-azul-medio); [cite: 53]
+    [cite_start]margin-left: var(--espaco-sm); [cite: 54]
+}
+
+.avatar.bot {
+    [cite_start]background-color: var(--cor-balao-bot); [cite: 54]
+    [cite_start]color: var(--cor-texto-principal); [cite: 54]
+    [cite_start]margin-right: var(--espaco-sm); [cite: 54]
+}
+
+.message {
+    [cite_start]padding: var(--espaco-md); [cite: 55]
+    [cite_start]border-radius: 18px; [cite: 55]
+    [cite_start]word-wrap: break-word; [cite: 55]
+    [cite_start]box-shadow: 0 1px 3px var(--cor-sombra); [cite: 56]
+    [cite_start]line-height: 1.5; [cite: 56]
+}
+
+.user .message {
+    [cite_start]background: linear-gradient(135deg, var(--cor-azul-medio) 0%, var(--cor-azul-escuro) 100%); [cite: 56]
+    [cite_start]color: #FFFFFF; [cite: 57]
+}
+
+.bot .message {
+    [cite_start]background: var(--cor-balao-bot); [cite: 57]
+    [cite_start]color: var(--cor-texto-principal); [cite: 57]
+}
+
+.copy-btn {
+    [cite_start]position: absolute; [cite: 59]
+    [cite_start]top: 12px; [cite: 59]
+    [cite_start]right: -40px; [cite: 60]
+    [cite_start]background: var(--cor-container); [cite: 60]
+    [cite_start]border: 1px solid var(--cor-borda); [cite: 60]
+    [cite_start]border-radius: 50%; [cite: 60]
+    [cite_start]width: 32px; [cite: 60]
+    [cite_start]height: 32px; [cite: 60]
+    [cite_start]cursor: pointer; [cite: 60]
+    [cite_start]display: flex; [cite: 60]
+    [cite_start]align-items: center; [cite: 60]
+    [cite_start]justify-content: center; [cite: 61]
+    [cite_start]opacity: 0; [cite: 61]
+    [cite_start]transition: all var(--transicao-normal); [cite: 61]
+}
+
+.message-container:hover .copy-btn {
+    [cite_start]opacity: 1; [cite: 61]
+    [cite_start]transform: scale(1); [cite: 62]
+    [cite_start]right: -16px; [cite: 62]
+}
+
+.copy-btn.copied {
+    [cite_start]color: var(--cor-sucesso); [cite: 62]
+    [cite_start]animation: feedbackCopied 0.5s ease; [cite: 63]
+}
+
+.feedback-container {
+    [cite_start]display: flex; [cite: 63]
+    [cite_start]justify-content: flex-end; [cite: 63]
+    [cite_start]gap: var(--espaco-xs); [cite: 63]
+    [cite_start]margin-top: var(--espaco-sm); [cite: 63]
+}
+
+.feedback-btn {
+    [cite_start]background: transparent; [cite: 64]
+    [cite_start]border: none; [cite: 64]
+    [cite_start]font-size: 16px; [cite: 64]
+    [cite_start]cursor: pointer; [cite: 64]
+    [cite_start]opacity: 0.6; [cite: 64]
+    [cite_start]transition: all var(--transicao-rapida); [cite: 64]
+}
+
+/* --- ANIMAÇÕES --- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; [cite_start]} [cite: 94]
+    to { transform: translateY(0); opacity: 1; [cite_start]} [cite: 94]
+}
+
+@keyframes feedbackCopied {
+    0% { transform: scale(1); [cite_start]} [cite: 94]
+    50% { transform: scale(1.2); [cite_start]} [cite: 95]
+    100% { transform: scale(1); [cite_start]} [cite: 95]
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 1200px) {
+    .app-wrapper {
+        [cite_start]grid-template-columns: 250px 1fr; [cite: 98]
+    }
+    #news-panel {
+        [cite_start]display: none; [cite: 99]
+    }
+}
+
+@media (max-width: 768px) {
+    .app-wrapper {
+        [cite_start]grid-template-columns: 1fr; [cite: 99]
+        [cite_start]height: 100vh; [cite: 100]
+    }
+    #sidebar {
+        [cite_start]display: none; [cite: 100]
+    }
+}
+
+/* Adicione outras regras CSS do seu arquivo original se estiverem faltando */
