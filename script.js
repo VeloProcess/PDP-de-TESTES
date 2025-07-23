@@ -4,6 +4,7 @@
  * @param {object} dadosAtendente - Os dados do usuário logado (nome, email, foto).
  */
 function iniciarBot(dadosAtendente) {
+    // Referências aos elementos do DOM
     const chatBox = document.getElementById('chat-box');
     const userInput = document.getElementById('user-input');
     const sendButton = document.getElementById('send-button');
@@ -11,10 +12,12 @@ function iniciarBot(dadosAtendente) {
     const body = document.body;
     const questionSearch = document.getElementById('question-search');
     
+    // Variáveis de estado do chat
     let ultimaPergunta = '';
     let ultimaLinhaDaFonte = null;
     let isTyping = false;
     
+    // URL do Backend (Google Apps Script)
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbw8n95lQr5-RbxG9qYG7O_3ZEOVkVQ3K50C3iFM9JViLyEsa8hiDuRuCzlgy_YPoI43/exec";
 
     async function copiarTextoParaClipboard(texto) {
@@ -22,7 +25,7 @@ function iniciarBot(dadosAtendente) {
             await navigator.clipboard.writeText(texto);
             return true;
         } catch (err) {
-            console.warn('Método de cópia falhou', err);
+            console.warn('Método moderno de cópia falhou, tentando fallback...', err);
             const textArea = document.createElement("textarea");
             textArea.value = texto;
             textArea.style.position = "fixed";
@@ -34,9 +37,35 @@ function iniciarBot(dadosAtendente) {
                 document.body.removeChild(textArea);
                 return successful;
             } catch (fallbackErr) {
+                console.error('Falha total ao copiar com ambos os métodos:', fallbackErr);
                 document.body.removeChild(textArea);
                 return false;
             }
+        }
+    }
+
+    function showTypingIndicator() {
+        if (isTyping) return;
+        isTyping = true;
+        const typingContainer = document.createElement('div');
+        typingContainer.className = 'message-container bot typing-indicator';
+        typingContainer.id = 'typing-indicator';
+        typingContainer.innerHTML = `
+            <div class="avatar bot">🤖</div>
+            <div class="message-content">
+                <div class="message">
+                    <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+                </div>
+            </div>`;
+        chatBox.appendChild(typingContainer);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+        isTyping = false;
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
         }
     }
 
@@ -99,7 +128,7 @@ function iniciarBot(dadosAtendente) {
     
     async function enviarFeedback(action, container) {
         if (!ultimaPergunta || !ultimaLinhaDaFonte) return;
-        container.innerHTML = '<span>Obrigado!</span>';
+        container.innerHTML = '<span style="font-size: 12px; color: var(--cor-texto-secundario);">Obrigado!</span>';
 
         try {
             await fetch(BACKEND_URL, {
@@ -123,23 +152,29 @@ function iniciarBot(dadosAtendente) {
         if (!textoDaPergunta.trim()) return;
 
         addMessage(textoDaPergunta, 'user');
+        showTypingIndicator();
 
         try {
             const url = `${BACKEND_URL}?pergunta=${encodeURIComponent(textoDaPergunta)}&email=${encodeURIComponent(dadosAtendente.email)}`;
             const response = await fetch(url);
             
-            if (!response.ok) throw new Error(`Erro de rede: ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`Erro de rede: ${response.status}`);
+            }
             
             const data = await response.json();
+            hideTypingIndicator();
 
             if (data.status === 'sucesso') {
+                ultimaLinhaDaFonte = data.sourceRow;
                 addMessage(data.resposta, 'bot', { sourceRow: data.sourceRow });
             } else {
-                addMessage(data.mensagem || "Ocorreu um erro.", 'bot');
+                addMessage(data.mensagem || "Ocorreu um erro ao processar sua pergunta.", 'bot');
             }
         } catch (error) {
+            hideTypingIndicator();
             console.error("Erro ao buscar resposta:", error);
-            addMessage("Erro de conexão.", 'bot');
+            addMessage("Erro de conexão. Verifique o console (F12) para mais detalhes.", 'bot');
         }
     }
 
@@ -150,6 +185,17 @@ function iniciarBot(dadosAtendente) {
         userInput.value = '';
     }
 
+    function setInitialTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-theme');
+            themeSwitcher.innerHTML = '🌙';
+        } else {
+            body.classList.remove('dark-theme');
+            themeSwitcher.innerHTML = '☀️';
+        }
+    }
+    
     userInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -159,11 +205,41 @@ function iniciarBot(dadosAtendente) {
 
     sendButton.addEventListener('click', () => handleSendMessage(userInput.value));
     
+    document.querySelectorAll('#quick-questions-list li, #more-questions-list-financeiro li, #more-questions-list-tecnico li').forEach(item => {
+        item.addEventListener('click', (e) => handleSendMessage(e.currentTarget.getAttribute('data-question')));
+    });
+
+    document.getElementById('expandable-faq-header').addEventListener('click', (e) => {
+        e.currentTarget.classList.toggle('expanded');
+        document.getElementById('more-questions').style.display = e.currentTarget.classList.contains('expanded') ? 'block' : 'none';
+    });
+
+    themeSwitcher.addEventListener('click', () => {
+        body.classList.toggle('dark-theme');
+        const isDark = body.classList.contains('dark-theme');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        themeSwitcher.innerHTML = isDark ? '🌙' : '☀️';
+    });
+
+    questionSearch.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        document.querySelectorAll('#quick-questions-list li, #more-questions-list-financeiro li, #more-questions-list-tecnico li').forEach(question => {
+            const text = question.textContent.toLowerCase();
+            question.style.display = text.includes(searchTerm) ? 'flex' : 'none';
+        });
+    });
+
+    setInitialTheme();
     const primeiroNome = dadosAtendente.nome.split(' ')[0];
+    
     chatBox.innerHTML = '';
     addMessage(`Olá, ${primeiroNome}! Como posso te ajudar?`, 'bot');
 }
 
+
+/**
+ * Verifica se há uma sessão de login válida no localStorage quando a página carrega.
+ */
 function verificarIdentificacao() {
     const loginScreen = document.getElementById('login-screen');
     const appWrapper = document.querySelector('.app-wrapper');
@@ -173,8 +249,11 @@ function verificarIdentificacao() {
 
     try {
         const dadosSalvosString = localStorage.getItem('dadosAtendenteChatbot');
-        if (dadosSalvosString) dadosSalvos = JSON.parse(dadosSalvosString);
+        if (dadosSalvosString) {
+            dadosSalvos = JSON.parse(dadosSalvosString);
+        }
     } catch (e) {
+        console.error("Erro ao ler dados do localStorage:", e);
         localStorage.removeItem('dadosAtendenteChatbot');
     }
 
@@ -189,4 +268,5 @@ function verificarIdentificacao() {
     }
 }
 
+// Executa a verificação de sessão assim que o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', verificarIdentificacao);
