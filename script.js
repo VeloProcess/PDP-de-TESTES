@@ -1,10 +1,40 @@
 /**
- * Função global para iniciar toda a lógica do chatbot e da interface.
- * É chamada após um login bem-sucedido ou ao encontrar uma sessão válida.
- * @param {object} dadosAtendente - Os dados do usuário logado (nome, email, foto).
+ * Função de callback para o login do Google.
+ * É chamada pela API do Google após o usuário fazer login.
+ */
+function handleCredentialResponse(response) {
+    try {
+        const userObject = JSON.parse(atob(response.credential.split('.')[1]));
+        const dadosAtendente = {
+            nome: userObject.name,
+            email: userObject.email,
+            foto: userObject.picture,
+            timestamp: Date.now()
+        };
+
+        const DOMINIO_PERMITIDO = "@velotax.com.br";
+        if (!dadosAtendente.email.endsWith(DOMINIO_PERMITIDO)) {
+            alert("Acesso negado. Por favor, use uma conta Google com o domínio " + DOMINIO_PERMITIDO);
+            return;
+        }
+
+        localStorage.setItem('dadosAtendenteChatbot', JSON.stringify(dadosAtendente));
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.querySelector('.app-wrapper').classList.remove('hidden');
+        
+        iniciarBot(dadosAtendente);
+
+    } catch (error) {
+        console.error("Erro ao processar o login do Google:", error);
+        alert("Ocorreu um erro ao tentar fazer o login. Verifique o console para mais detalhes.");
+    }
+}
+
+/**
+ * Função principal que inicia toda a lógica do chatbot e da interface.
  */
 function iniciarBot(dadosAtendente) {
-    // Referências aos elementos do DOM
     const chatBox = document.getElementById('chat-box');
     const userInput = document.getElementById('user-input');
     const sendButton = document.getElementById('send-button');
@@ -12,12 +42,10 @@ function iniciarBot(dadosAtendente) {
     const body = document.body;
     const questionSearch = document.getElementById('question-search');
     
-    // Variáveis de estado do chat
     let ultimaPergunta = '';
     let ultimaLinhaDaFonte = null;
     let isTyping = false;
     
-    // URL do Backend (Google Apps Script)
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbw8n95lQr5-RbxG9qYG7O_3ZEOVkVQ3K50C3iFM9JViLyEsa8hiDuRuCzlgy_YPoI43/exec";
 
     async function copiarTextoParaClipboard(texto) {
@@ -25,7 +53,7 @@ function iniciarBot(dadosAtendente) {
             await navigator.clipboard.writeText(texto);
             return true;
         } catch (err) {
-            console.warn('Método moderno de cópia falhou, tentando fallback...', err);
+            console.warn('Método de cópia falhou', err);
             const textArea = document.createElement("textarea");
             textArea.value = texto;
             textArea.style.position = "fixed";
@@ -37,7 +65,6 @@ function iniciarBot(dadosAtendente) {
                 document.body.removeChild(textArea);
                 return successful;
             } catch (fallbackErr) {
-                console.error('Falha total ao copiar com ambos os métodos:', fallbackErr);
                 document.body.removeChild(textArea);
                 return false;
             }
@@ -50,13 +77,7 @@ function iniciarBot(dadosAtendente) {
         const typingContainer = document.createElement('div');
         typingContainer.className = 'message-container bot typing-indicator';
         typingContainer.id = 'typing-indicator';
-        typingContainer.innerHTML = `
-            <div class="avatar bot">🤖</div>
-            <div class="message-content">
-                <div class="message">
-                    <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
-                </div>
-            </div>`;
+        typingContainer.innerHTML = `<div class="avatar bot">🤖</div><div class="message-content"><div class="message"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
         chatBox.appendChild(typingContainer);
         chatBox.scrollTop = chatBox.scrollHeight;
     }
@@ -75,10 +96,7 @@ function iniciarBot(dadosAtendente) {
         messageContainer.classList.add('message-container', sender);
         
         const avatarDiv = `<div class="avatar ${sender}">${sender === 'user' ? '👤' : '🤖'}</div>`;
-        const messageContentDiv = `
-            <div class="message-content">
-                <div class="message">${message.replace(/\n/g, '<br>')}</div>
-            </div>`;
+        const messageContentDiv = `<div class="message-content"><div class="message">${message.replace(/\n/g, '<br>')}</div></div>`;
 
         messageContainer.innerHTML = sender === 'user' ? messageContentDiv + avatarDiv : avatarDiv + messageContentDiv;
         chatBox.appendChild(messageContainer);
@@ -158,9 +176,7 @@ function iniciarBot(dadosAtendente) {
             const url = `${BACKEND_URL}?pergunta=${encodeURIComponent(textoDaPergunta)}&email=${encodeURIComponent(dadosAtendente.email)}`;
             const response = await fetch(url);
             
-            if (!response.ok) {
-                throw new Error(`Erro de rede: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`Erro de rede: ${response.status}`);
             
             const data = await response.json();
             hideTypingIndicator();
@@ -169,12 +185,12 @@ function iniciarBot(dadosAtendente) {
                 ultimaLinhaDaFonte = data.sourceRow;
                 addMessage(data.resposta, 'bot', { sourceRow: data.sourceRow });
             } else {
-                addMessage(data.mensagem || "Ocorreu um erro ao processar sua pergunta.", 'bot');
+                addMessage(data.mensagem || "Ocorreu um erro.", 'bot');
             }
         } catch (error) {
             hideTypingIndicator();
             console.error("Erro ao buscar resposta:", error);
-            addMessage("Erro de conexão. Verifique o console (F12) para mais detalhes.", 'bot');
+            addMessage("Erro de conexão. Verifique o console para mais detalhes.", 'bot');
         }
     }
 
@@ -220,7 +236,7 @@ function iniciarBot(dadosAtendente) {
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
         themeSwitcher.innerHTML = isDark ? '🌙' : '☀️';
     });
-
+    
     questionSearch.addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase();
         document.querySelectorAll('#quick-questions-list li, #more-questions-list-financeiro li, #more-questions-list-tecnico li').forEach(question => {
@@ -236,7 +252,6 @@ function iniciarBot(dadosAtendente) {
     addMessage(`Olá, ${primeiroNome}! Como posso te ajudar?`, 'bot');
 }
 
-
 /**
  * Verifica se há uma sessão de login válida no localStorage quando a página carrega.
  */
@@ -249,11 +264,8 @@ function verificarIdentificacao() {
 
     try {
         const dadosSalvosString = localStorage.getItem('dadosAtendenteChatbot');
-        if (dadosSalvosString) {
-            dadosSalvos = JSON.parse(dadosSalvosString);
-        }
+        if (dadosSalvosString) dadosSalvos = JSON.parse(dadosSalvosString);
     } catch (e) {
-        console.error("Erro ao ler dados do localStorage:", e);
         localStorage.removeItem('dadosAtendenteChatbot');
     }
 
