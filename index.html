@@ -55,7 +55,7 @@
             <p>Por favor, faça login com sua conta Google para continuar.</p>
             
             <div id="g_id_onload"
-                 data-client_id="827325386401-ahi2f9ume9i7lc28lau7j4qlviv5d22k.apps.googleusercontent.com"
+                 data-client_id="COLE_SEU_ID_DO_CLIENTE_OAUTH_AQUI"
                  data-callback="handleCredentialResponse"
                  data-auto_select="true">
             </div>
@@ -80,15 +80,42 @@
                     <span class="search-icon">🔍</span>
                     <input type="text" id="question-search" placeholder="Buscar perguntas...">
                 </div>
-                 <div class="question-category">Mais Comuns</div>
-                 <ul id="quick-questions-list">
-                     <li data-question="E-mail de procuração, o que dizer?">E-mail de procuração, o que dizer?</li>
-                     <li data-question="Quero fazer a exclusão da minha conta">Quero fazer a exclusão da minha conta</li>
-                     <li data-question="Problema no login do app">Problema no login do app</li>
-                     <li data-question="Informação sobre os valores da restituição">Informação sobre os valores da restituição</li>
-                 </ul>
+                <div class="question-category">Mais Comuns</div>
+                <ul id="quick-questions-list">
+                    <li data-question="E-mail de procuração, o que dizer?">E-mail de procuração, o que dizer?</li>
+                    <li data-question="Quero fazer a exclusão da minha conta">Quero fazer a exclusão da minha conta</li>
+                    <li data-question="Problema no login do app">Problema no login do app</li>
+                    <li data-question="Informação sobre os valores da restituição">Informação sobre os valores da restituição</li>
+                </ul>
+                <div id="expandable-faq-container">
+                    <div id="expandable-faq-header" class="expandable-header">
+                        <span>Outras Perguntas</span>
+                        <span class="arrow">▶</span>
+                    </div>
+                    <div id="more-questions" class="hidden-questions">
+                        <div class="question-category">Financeiro</div>
+                        <ul id="more-questions-list-financeiro">
+                            <li data-question="Retenção da chave pix">Retenção da chave pix</li>
+                            <li data-question="Juros">Juros</li>
+                            <li data-question="Desconto proporcional">Desconto proporcional</li>
+                            <li data-question="Qual o prazo para a restituição?">Qual o prazo para a restituição?</li>
+                            <li data-question="Como fazer estorno?">Como fazer estorno?</li>
+                        </ul>
+                         <div class="question-category">Técnico</div>
+                        <ul id="more-questions-list-tecnico">
+                            <li data-question="Portabilidade">Portabilidade</li>
+                            <li data-question="O que fazer se caí na malha fina?">O que fazer se caí na malha fina?</li>
+                            <li data-question="Como declarar investimentos?">Como declarar investimentos?</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="margin-top: auto; padding-top: var(--espaco-md); border-top: 1px solid var(--cor-borda);">
+                    <p style="font-size: 13px; color: var(--cor-azul-medio);">📋 Clique na prancheta para copiar</p>
+                    <p style="font-size: 12px; margin-top: var(--espaco-sm);"><strong>Observação: As informações aqui são de uso interno.</strong></p>
+                </div>
             </div>
         </div>
+
         <div class="chat-container panel">
             <div class="chat-header">
                 <img src="https://github.com/VeloProcess/PDP-Portal-de-Processos-/blob/main/unnamed%20(2).png?raw=true" alt="Logo" class="chat-logo">
@@ -104,6 +131,7 @@
                 <button class="gemini-button" onclick="window.open('https://gemini.google.com/app')" title="Obter ajuda do Gemini AI">✦</button>
             </div>
         </div>
+
         <div id="news-panel" class="panel">
             <div class="panel-header">
                 <h2>Notícias e Alertas</h2>
@@ -112,7 +140,7 @@
                 <div class="news-item critical-alert">
                     <h2>Desligamos a Antecipação novamente, pessoal</h2>
                     <small>Publicado em: 07/07/2025</small>
-                    <p>Pessoal, para todos os clientes que entrarem em contato via chamada ou ticket, que questionar/demonstrar interesse na antecipação e/ou crédito trabalhador, por favor, registrem na planilha abaixo, pois realizaremos o envio de notificação para os mesmos. 🚨É importante¹ mencionar que estamos realizando os testes finais e em breve serão disponibilizados no aplicativo. 🚨É importante² ***NÃO*** mencionar nenhum prazo aos clientes. Conforme formos avançando, informaremos à vocês. [cite_start]Link e planilha no grupo B2C Recados e novidades!!</p> [cite: 179, 180, 181, 182]
+                    <p>Pessoal, para todos os clientes que entrarem em contato via chamada ou ticket, que questionar/demonstrar interesse na antecipação e/ou crédito trabalhador, por favor, registrem na planilha abaixo, pois realizaremos o envio de notificação para os mesmos. 🚨É importante¹ mencionar que estamos realizando os testes finais e em breve serão disponibilizados no aplicativo. 🚨É importante² ***NÃO*** mencionar nenhum prazo aos clientes. Conforme formos avançando, informaremos à vocês. Link e planilha no grupo B2C Recados e novidades!!</p>
                 </div>
             </div>
         </div>
