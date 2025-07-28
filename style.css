@@ -630,6 +630,7 @@ body.dark-theme::before {
 #feedback-cancel { background-color: #ddd; color: #333; }
 #feedback-send { background-color: var(--cor-sucesso); color: white; }
 
+
 /* --- ESTILOS PARA O MODAL DE CURADORIA --- */
 #curadoria-overlay {
     position: fixed; top: 0; left: 0;
@@ -663,12 +664,11 @@ body.dark-theme::before {
     background-color: var(--cor-fundo);
     color: var(--cor-texto-principal);
 }
-#curadoria-send {
-    background-color: var(--cor-sucesso);
-    color: white;
-}
-/* Adiciona estilo para o botão de cancelar do modal de curadoria */
 #curadoria-cancel {
     background-color: #ddd;
     color: #333;
+}
+#curadoria-send {
+    background-color: var(--cor-sucesso);
+    color: white;
 }
