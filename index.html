@@ -3,43 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://script.google.com https://accounts.google.com;">
-    <meta http-equiv="Permissions-Policy" content="identity-credentials-get=()">
-
-    <title>Painel Interno com ChatBot - Velo Process</title>
-    <link rel="icon" type="image/png" href="https://github.com/velobot05/Chatbot-Atendimento/blob/main/imagens/logo.png-removebg-preview%20(1).png?raw=true">
-    
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        img-src 'self' https://github.com https://raw.githubusercontent.com https://www.google.com;
+        script-src 'self' https://accounts.google.com https://www.gstatic.com;
+        frame-src https://accounts.google.com;
+        style-src 'self' 'unsafe-inline';
+        connect-src 'self' https://www.googleapis.com https://script.google.com https://script.googleapis.com;
+    ">
+    <title>Painel Interno com ChatBot</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/VeloProcess/PDP-Portal-de-Processos-/refs/heads/main/unnamed.png">
     <link rel="stylesheet" href="style.css">
-    
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
+    <script async defer src="https://accounts.google.com/gsi/client"></script>
 </head>
 <body>
-
-    <div id="login-screen">
+    <div id="identificacao-overlay">
         <div id="identificacao-box">
-             <img src="https://github.com/VeloProcess/PDP-Portal-de-Processos-/blob/main/unnamed%20(2).png?raw=true" alt="Logo da Empresa" style="width: 100px; margin-bottom: 20px;">
-            <h2>Bem-vindo(a) ao Painel de Atendimento</h2>
-            <p>Por favor, faça login com sua conta Google para continuar.</p>
-            
-            <div id="g_id_onload"
-                 data-client_id="827325386401-ahi2f9ume9i7lc28lau7j4qlviv5d22k.apps.googleusercontent.com"
-                 data-callback="handleCredentialResponse"
-                 data-auto_select="true">
+            <h2>Bem-vindo(a) ao Painel</h2>
+            <p>Por favor, faça login com sua conta Google corporativa (@velotax.com.br).</p>
+            <div>
+                <button id="google-signin-button">Entrar com Google</button>
             </div>
-            <div class="g_id_signin"
-                 data-type="standard"
-                 data-theme="outline"
-                 data-size="large"
-                 data-text="sign_in_with"
-                 data-shape="rectangular"
-                 data-logo_alignment="left">
-            </div>
+            <p id="identificacao-error" class="hidden">Acesso permitido apenas para e-mails @velotax.com.br!</p>
         </div>
     </div>
 
-    <div class="app-wrapper hidden">
+    <div class="app-wrapper">
         <div id="sidebar" class="panel">
             <div class="panel-header">
                 <h2>Perguntas Frequentes</h2>
@@ -47,46 +36,54 @@
             <div class="sidebar-content">
                 <div class="search-container">
                     <span class="search-icon">🔍</span>
-                    <input type="text" id="question-search" placeholder="Buscar perguntas...">
+                    <input type="text" id="question-search" placeholder="Pesquisar perguntas...">
                 </div>
-                <div class="question-category">Mais Comuns</div>
+                <h3 class="question-category">Mais Comuns</h3>
                 <ul id="quick-questions-list">
                     <li data-question="E-mail de procuração, o que dizer?">E-mail de procuração, o que dizer?</li>
                     <li data-question="Quero fazer a exclusão da minha conta">Quero fazer a exclusão da minha conta</li>
                     <li data-question="Problema no login do app">Problema no login do app</li>
                     <li data-question="Informação sobre os valores da restituição">Informação sobre os valores da restituição</li>
                 </ul>
-                <div id="expandable-faq-container">
-                    <div id="expandable-faq-header" class="expandable-header">
-                        <span>Outras Perguntas</span>
-                        <span class="arrow">▶</span>
-                    </div>
-                    <div id="more-questions" class="hidden-questions">
-                        <div class="question-category">Financeiro</div>
-                        <ul id="more-questions-list-financeiro">
-                            <li data-question="Retenção da chave pix">Retenção da chave pix</li>
-                        </ul>
-                         <div class="question-category">Técnico</div>
-                        <ul id="more-questions-list-tecnico">
-                            <li data-question="Portabilidade">Portabilidade</li>
-                        </ul>
-                    </div>
+                <div id="expandable-faq-header" class="expandable-header">
+                    <span>Outras Perguntas</span>
+                    <span class="arrow">▶</span>
                 </div>
+                <div id="more-questions" class="hidden-questions">
+                    <h3 class="question-category">Financeiro</h3>
+                    <ul id="more-questions-list-financeiro">
+                        <li data-question="Retenção da chave pix">Retenção da chave pix</li>
+                        <li data-question="Juros">Juros</li>
+                        <li data-question="Desconto proporcional">Desconto proporcional</li>
+                        <li data-question="Qual o prazo para a restituição?">Qual o prazo para a restituição?</li>
+                        <li data-question="Como fazer estorno?">Como fazer estorno?</li>
+                    </ul>
+                    <h3 class="question-category">Técnico</h3>
+                    <ul id="more-questions-list-tecnico">
+                        <li data-question="Portabilidade">Portabilidade</li>
+                        <li data-question="O que fazer se caí na malha fina?">O que fazer se caí na malha fina?</li>
+                        <li data-question="Como declarar investimentos?">Como declarar investimentos?</li>
+                    </ul>
+                </div>
+                <p>
+                    <span class="emoji-icon">📋</span> Clique na prancheta ao lado da resposta para copiar
+                </p>
+                <p>Observação: As informações aqui são de uso interno.</p>
             </div>
         </div>
 
-        <div class="chat-container panel">
+        <div id="chat-panel" class="panel">
             <div class="chat-header">
-                <img src="https://github.com/VeloProcess/PDP-Portal-de-Processos-/blob/main/unnamed%20(2).png?raw=true" alt="Logo" class="chat-logo">
-                <h2 class="chat-title">Assistente Virtual <span class="status-indicator"></span></h2>
-                <button id="theme-switcher" title="Alterar tema">☀️</button>
+                <img src="https://raw.githubusercontent.com/VeloProcess/PDP-Portal-de-Processos-/refs/heads/main/unnamed.png" alt="Logo" class="chat-logo">
+                <h1 class="chat-title">Assistente Virtual <span class="status-indicator"></span></h1>
+                <p>Seu assistente para processos internos</p>
+                <button id="theme-switcher" title="Alternar tema">☀️</button>
             </div>
-            <div class="chat-box" id="chat-box"></div>
+            <div id="chat-box" class="chat-box"></div>
             <div class="input-area">
-                <input type="text" id="user-input" placeholder="Digite sua mensagem..." autocomplete="off">
-                <button id="send-button" class="action-button" title="Enviar mensagem">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405Z"></path></svg>
-                </button>
+                <input type="text" id="user-input" placeholder="Digite sua pergunta...">
+                <button id="send-button" class="action-button">✦</button>
+                <button id="gemini-button" class="gemini-button">G</button>
             </div>
         </div>
 
@@ -94,10 +91,40 @@
             <div class="panel-header">
                 <h2>Notícias e Alertas</h2>
             </div>
+            <div class="news-list">
+                <div class="news-item critical-alert">
+                    <h2>Desligamos a Antecipação novamente, pessoal</h2>
+                    <small>Publicado em: 07/07/2025</small>
+                    <p>Pessoal, para todos os clientes que entrarem em contato via chamada ou ticket, que questionar/demonstrar interesse na antecipação e/ou crédito trabalhador, por favor, registrem na planilha abaixo, pois realizaremos o envio de notificação para os mesmos.</p>
+                    <p>🚨É importante¹ mencionar que estamos realizando os testes finais e em breve serão disponibilizados no aplicativo.</p>
+                    <p>🚨É importante² <strong>NÃO</strong> mencionar nenhum prazo aos clientes. Conforme formos avançando, informaremos à vocês. Link e planilha no grupo B2C Recados e novidades!!</p>
+                </div>
+                <div class="news-item warning-alert">
+                    <h2>Ainda sem novidades!</h2>
+                    <small>Publicado em: 07/07/2025</small>
+                    <p>...</p>
+                </div>
+                <div class="news-item info-alert">
+                    <h2>Ainda sem novidades!</h2>
+                    <small>Publicado em: 07/07/2025</small>
+                    <p>...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="feedback-overlay" class="hidden">
+        <div id="feedback-box">
+            <h2>Melhorar esta Resposta</h2>
+            <p>Obrigado pelo seu feedback! Por favor, nos diga o que estava errado ou o que estava faltando na resposta.</p>
+            <textarea id="feedback-text" placeholder="Descreva o problema ou sugestão..."></textarea>
+            <div class="feedback-form-buttons">
+                <button id="feedback-cancel">Cancelar</button>
+                <button id="feedback-send">Enviar Feedback</button>
+            </div>
         </div>
     </div>
 
     <script src="script.js"></script>
-
 </body>
 </html>
