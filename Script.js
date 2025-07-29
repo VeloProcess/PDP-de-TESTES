@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ================== CONFIGURAÇÕES ==================
     // ⚠️ ATENÇÃO: Cole aqui a URL do seu PROXY ou do seu SCRIPT DO GOOGLE.
-    const BACKEND_URL = "https://proxy-cors-spkg.onrender.com/proxy";
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzaR1T6Ngr9AUZuiG2-erzwC6xEISQgUUKTpe5VBtF6DVs0V-j-sKfNykaZgKcWczV6hQ/exec";
     
     const DOMINIO_PERMITIDO = "@velotax.com.br";
     const CLIENT_ID = '827325386401-ahi2f9ume9i7lc28lau7j4qlviv5d22k.apps.googleusercontent.com';
