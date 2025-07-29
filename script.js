@@ -230,8 +230,70 @@ document.addEventListener('DOMContentLoaded', () => {
               negativeBtn.className = 'feedback-btn';
               negativeBtn.innerHTML = '👎';
               negativeBtn.title = 'Resposta incorreta';
-              negativeBtn.onclick = () => enviarFeedback('logFeedbackNegativo', feedbackContainer);
-              feedbackContainer.appendChild(positiveBtn);
+              // Substituir o onclick do botão negativo para abrir textarea de sugestão
+              negativeBtn.onclick = () => {
+                  // Cria overlay para sugestão
+                  const overlay = document.createElement('div');
+                  overlay.className = 'curadoria-overlay';
+                  overlay.style.position = 'fixed';
+                  overlay.style.top = 0;
+                  overlay.style.left = 0;
+                  overlay.style.width = '100vw';
+                  overlay.style.height = '100vh';
+                  overlay.style.background = 'rgba(0,0,0,0.4)';
+                  overlay.style.display = 'flex';
+                  overlay.style.alignItems = 'center';
+                  overlay.style.justifyContent = 'center';
+                  overlay.style.zIndex = 9999;
+
+                  const box = document.createElement('div');
+                  box.className = 'curadoria-box';
+                  box.style.background = '#fff';
+                  box.style.padding = '32px';
+                  box.style.borderRadius = '12px';
+                  box.style.maxWidth = '400px';
+                  box.style.boxShadow = '0 2px 16px rgba(0,0,0,0.15)';
+                  box.innerHTML = `<h2>Sugerir Correção</h2><p>A resposta do bot não foi útil. Por favor, descreva qual seria o procedimento ou a informação correta.</p>`;
+
+                  const textarea = document.createElement('textarea');
+                  textarea.placeholder = 'Digite sua sugestão aqui...';
+                  textarea.style.width = '100%';
+                  textarea.style.height = '80px';
+                  textarea.style.marginBottom = '16px';
+                  box.appendChild(textarea);
+
+                  const btns = document.createElement('div');
+                  btns.style.display = 'flex';
+                  btns.style.justifyContent = 'flex-end';
+                  btns.style.gap = '8px';
+
+                  const cancelar = document.createElement('button');
+                  cancelar.textContent = 'Cancelar';
+                  cancelar.onclick = () => document.body.removeChild(overlay);
+                  btns.appendChild(cancelar);
+
+                  const enviar = document.createElement('button');
+                  enviar.textContent = 'Enviar Sugestão';
+                  enviar.style.background = '#4CAF50';
+                  enviar.style.color = '#fff';
+                  enviar.style.border = 'none';
+                  enviar.style.padding = '8px 16px';
+                  enviar.style.borderRadius = '6px';
+                  enviar.onclick = async () => {
+                      const sugestao = textarea.value.trim();
+                      if (!sugestao) {
+                          textarea.style.border = '2px solid #f44336';
+                          textarea.focus();
+                          return;
+                      }
+                      await enviarFeedback('logFeedbackNegativo', feedbackContainer, sugestao);
+                      document.body.removeChild(overlay);
+                  };
+                  btns.appendChild(enviar);
+                  box.appendChild(btns);
+                  overlay.appendChild(box);
+                  document.body.appendChild(overlay);
+              };
               feedbackContainer.appendChild(negativeBtn);
               messageContainer.querySelector('.message-content').appendChild(feedbackContainer);
           }
@@ -239,12 +301,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Enviar feedback
-      async function enviarFeedback(action, container) {
+      async function enviarFeedback(action, container, sugestao = '') {
           if (!ultimaPergunta || !ultimaLinhaDaFonte) return;
-          // CORRIGIDO (CSP): Usa classe em vez de estilo inline
           container.textContent = 'Obrigado!';
           container.className = 'feedback-thanks';
-
           try {
               await fetch(BACKEND_URL, {
                   method: 'POST',
@@ -253,7 +313,8 @@ document.addEventListener('DOMContentLoaded', () => {
                       action: action,
                       question: ultimaPergunta,
                       sourceRow: ultimaLinhaDaFonte,
-                      email: dadosAtendente.email
+                      email: dadosAtendente.email,
+                      sugestao: action === 'logFeedbackNegativo' ? sugestao : ''
                   })
               });
           } catch (error) {
