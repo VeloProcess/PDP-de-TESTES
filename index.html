@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- CSP CORRIGIDA: Permite estilos inline e a conexão com o script do Google -->
+    <!-- CSP para permitir a conexão com os serviços do Google e o seu proxy -->
     <meta http-equiv="Content-Security-Policy"
       content="default-src 'self';
                img-src 'self' https://github.com https://raw.githubusercontent.com https://www.google.com;
                script-src 'self' https://accounts.google.com https://www.gstatic.com;
                frame-src https://accounts.google.com;
-               style-src 'self' 'unsafe-inline';
-               connect-src 'self' https://www.googleapis.com https://script.google.com https://script.googleusercontent.com;">
+               style-src 'self' 'unsafe-inline' 'unsafe-eval';
+               connect-src 'self' https://www.googleapis.com https://script.google.com https://script.googleusercontent.com https://proxy-cors-spkg.onrender.com;">
     <title>Painel Interno com ChatBot - Tema Clássico</title>
     <link rel="icon" type="image/png" href="https://github.com/VeloProcess/PDP-Portal-de-Processos-/blob/main/unnamed%20(2).png?raw=true">
+    
+    <!-- Link para o ficheiro de estilos CSS externo -->
     <link rel="stylesheet" href="style.css">
-    <!-- Script Google Identity Services antes do JS principal -->
+    
+    <!-- Script Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -76,25 +79,13 @@
             </div>
         </div>
 
-        <div id="feedback-overlay" class="hidden">
-            <div id="feedback-box">
-                <h2>Melhorar esta Resposta</h2>
-                <p>Obrigado pelo seu feedback! Por favor, nos diga o que estava errado ou o que estava faltando na resposta.</p>
-                <form id="feedback-form">
-                    <textarea id="feedback-comment" placeholder="Ex: A resposta está desatualizada, o link está quebrado, a informação correta é..." required></textarea>
-                    <div class="feedback-form-buttons">
-                        <button type="button" id="feedback-cancel">Cancelar</button>
-                        <button type="submit" id="feedback-send">Enviar Feedback</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
         <div class="chat-container panel">
             <div class="chat-header">
                 <img src="https://github.com/VeloProcess/PDP-Portal-de-Processos-/blob/main/unnamed%20(2).png?raw=true" alt="Logo" class="chat-logo">
-                <h2 class="chat-title">Assistente Virtual <span class="status-indicator"></span></h2>
-                <p class="chat-subtitle">Seu assistente para processos internos</p> 
+                <div>
+                    <h2 class="chat-title">Assistente Virtual</h2>
+                    <p class="chat-subtitle">Seu assistente para processos internos</p> 
+                </div>
                 <button id="theme-switcher" title="Alterar tema">☀️</button>
             </div>
             <div class="chat-box" id="chat-box"></div>
@@ -114,7 +105,7 @@
             <div id="news-list" class="news-list">
                 <div class="news-item critical-alert">
                     <h2>Desligamos a Antecipação novamente, pessoal</h2>
-                    <small>Publicado em: 07/07/2025</small>
+                    <small>Publicado em: 29/07/2025</small>
                     <p>Pessoal, para todos os clientes que entrarem em contato via chamada ou ticket, que questionar/demonstrar interesse na antecipação e/ou crédito trabalhador, por favor, registrem na planilha abaixo, pois realizaremos o envio de notificação para os mesmos. 
 🚨É importante¹ mencionar que estamos realizando os testes finais e em breve serão disponibilizados no aplicativo.
 🚨É importante² ***NÃO*** mencionar nenhum prazo aos clientes. Conforme formos avançando, informaremos à vocês. Link e planilha no grupo B2C Recados e novidades!!</p>
@@ -133,7 +124,7 @@
         </div>
     </div>
 
-    <!-- NOVO MODAL DE CURADORIA -->
+    <!-- MODAL DE CURADORIA (JÁ EXISTENTE NO SEU HTML) -->
     <div id="curadoria-overlay" class="hidden">
         <div id="curadoria-box">
             <h2>Sugerir Correção</h2>
@@ -148,7 +139,7 @@
         </div>
     </div>
 
-    <!-- JS principal por último -->
-    <script src="Script.js"></script>
+    <!-- Link para o ficheiro JavaScript externo. 'defer' garante que o script só executa após o HTML ser analisado. -->
+    <script src="script.js" defer></script>
 </body>
 </html>
