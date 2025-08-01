@@ -164,58 +164,61 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function addMessage(message, sender, options = {}) {
-            const { sourceRow = null } = options;
-            const messageContainer = document.createElement('div');
-            messageContainer.classList.add('message-container', sender);
-            const avatarDiv = `<div class="avatar ${sender === 'user' ? 'user' : 'bot'}">${sender === 'user' ? '👤' : '🤖'}</div>`;
-            const messageContentDiv = `<div class="message-content"><div class="message">${message.replace(/\n/g, '<br>')}</div></div>`;
-            messageContainer.innerHTML = sender === 'user' ? messageContentDiv + avatarDiv : avatarDiv + messageContentDiv;
-            chatBox.appendChild(messageContainer);
+    let mensagemFinal = message; // Começa com a mensagem original
 
-            if (sender === 'bot' && sourceRow) {
-                const messageBox = messageContainer.querySelector('.message-content');
-                const feedbackContainer = document.createElement('div');
-                feedbackContainer.className = 'feedback-container';
-                const positiveBtn = document.createElement('button');
-                positiveBtn.className = 'feedback-btn';
-                positiveBtn.innerHTML = '👍';
-                positiveBtn.title = 'Resposta útil';
-                positiveBtn.onclick = () => enviarFeedback('logFeedbackPositivo', feedbackContainer);
-                const negativeBtn = document.createElement('button');
-                negativeBtn.className = 'feedback-btn';
-                negativeBtn.innerHTML = '👎';
-                negativeBtn.title = 'Resposta incorreta ou incompleta';
-                negativeBtn.onclick = () => abrirModalFeedback(feedbackContainer);
-                feedbackContainer.appendChild(positiveBtn);
-                feedbackContainer.appendChild(negativeBtn);
-                messageBox.appendChild(feedbackContainer);
-            }
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-        /**
- * Formata um nome completo para uma assinatura com o primeiro nome e a inicial do segundo.
- * Ex: "Gabriel Araujo" se torna "Gabriel A."
- * @param {string} nomeCompleto O nome completo do atendente.
- * @returns {string} O nome formatado para a assinatura.
- */
-function formatarAssinatura(nomeCompleto) {
-    if (!nomeCompleto || typeof nomeCompleto !== 'string' || nomeCompleto.trim() === '') {
-        return ''; // Retorna vazio se o nome for inválido
+    // --- NOVA LÓGICA DE FORMATAÇÃO DE ASSINATURA ---
+    // Se a mensagem for do bot e contiver o placeholder, ele é substituído.
+    if (sender === 'bot' && dadosAtendente && typeof mensagemFinal === 'string' && mensagemFinal.includes('{{ASSINATURA_ATENDENTE}}')) {
+        // 1. Gera a assinatura personalizada com o nome do atendente logado
+        const assinatura = formatarAssinatura(dadosAtendente.nome);
+        
+        // 2. Substitui todas as ocorrências do placeholder pela assinatura gerada
+        mensagemFinal = mensagemFinal.replace(/{{ASSINATURA_ATENDENTE}}/g, assinatura);
     }
+    // --- FIM DA NOVA LÓGICA ---
 
-    const nomes = nomeCompleto.trim().split(' ');
-    const primeiroNome = nomes[0];
+    // O resto da sua função original continua abaixo, usando a "mensagemFinal"
+    const { sourceRow = null } = options;
+    const messageContainer = document.createElement('div');
+    messageContainer.classList.add('message-container', sender);
+    
+    const avatarDiv = `<div class="avatar ${sender === 'user' ? 'user' : 'bot'}">${sender === 'user' ? '👤' : '🤖'}</div>`;
+    
+    // Usa a mensagemFinal (que pode ter sido alterada) para criar o conteúdo
+    const messageContentDiv = `<div class="message-content"><div class="message">${mensagemFinal.replace(/\n/g, '<br>')}</div></div>`;
+    
+    messageContainer.innerHTML = sender === 'user' ? messageContentDiv + avatarDiv : avatarDiv + messageContentDiv;
+    chatBox.appendChild(messageContainer);
 
-    let assinaturaFormatada = primeiroNome;
+    if (sender === 'bot' && sourceRow) {
+        // Salva a última resposta e a linha da fonte para a lógica de feedback
+        ultimaResposta = messageContainer.querySelector('.message').textContent;
+        ultimaLinhaDaFonte = sourceRow;
 
-    // Verifica se existe um segundo nome para pegar a inicial
-    if (nomes.length > 1 && nomes[1]) {
-        const inicialDoSegundoNome = nomes[1].charAt(0).toUpperCase();
-        assinaturaFormatada += ` ${inicialDoSegundoNome}.`;
+        const messageBox = messageContainer.querySelector('.message-content');
+        const feedbackContainer = document.createElement('div');
+        feedbackContainer.className = 'feedback-container';
+        
+        const positiveBtn = document.createElement('button');
+        positiveBtn.className = 'feedback-btn';
+        positiveBtn.innerHTML = '👍';
+        positiveBtn.title = 'Resposta útil';
+        positiveBtn.onclick = () => enviarFeedback('logFeedbackPositivo', feedbackContainer);
+
+        const negativeBtn = document.createElement('button');
+        negativeBtn.className = 'feedback-btn';
+        negativeBtn.innerHTML = '👎';
+        negativeBtn.title = 'Resposta incorreta ou incompleta';
+        negativeBtn.onclick = () => abrirModalFeedback(feedbackContainer);
+        
+        feedbackContainer.appendChild(positiveBtn);
+        feedbackContainer.appendChild(negativeBtn);
+        messageBox.appendChild(feedbackContainer);
     }
-
-    return assinaturaFormatada;
+    
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
+
         async function enviarFeedback(action, container, sugestao = null) {
             if (!ultimaPergunta || !ultimaLinhaDaFonte) {
                 console.error("FALHA: Feedback não enviado. 'ultimaPergunta' ou 'ultimaLinhaDaFonte' está vazio ou nulo.");
